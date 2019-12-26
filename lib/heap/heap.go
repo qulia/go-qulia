@@ -1,27 +1,61 @@
 package heap
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 type Interface interface {
+	// Insert element to the heap
 	Insert(interface{})
+
+	// Extract top element from the heap
 	Extract()interface{}
-	Length() int
+
+	// Size of the heap
+	Size() int
+
+	// IsEmpty returns true for empty heap, false otherwise
 	IsEmpty() bool
 }
 
+// CompareFunc definition used to decide heap configuration
 type CompareFunc func(first, second interface{}) int
 
+// MinHeap is heap structure with min element is top
 type MinHeap struct {
 }
 
+// NewMinHeap initializes the heap structure from provided slice
+
+// input: The input slice is cloned and will not be modified by this method
+// Pass nil as input if you do not have any initial entries
+
+// compareToFunc: function that takes two entries and returns positive value if first > second,
+// negative value if first < second, 0 otherwise
 func NewMinHeap(input []interface{}, compareToFunc CompareFunc) Interface {
+	if compareToFunc == nil {
+		log.Fatal("Nil compareToFunc param")
+	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)
 	return initHeap(buffer, compareToFunc, false)
 }
 
+// MinHeap is heap structure with max element is top
 type MaxHeap struct {
 }
 
+// NewMaxHeap initializes the heap structure from provided slice
+//
+// input: The input slice is cloned and will not be modified by this method
+// Pass nil as input if you do not have any initial entries
+//
+// compareToFunc: function that takes two entries and returns positive value if first > second,
+// negative value if first < second, 0 otherwise
 func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface{
+	if compareToFunc == nil {
+		log.Fatal("Nil compareToFunc param")
+	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)
 	return initHeap(buffer, compareToFunc, true)
@@ -42,7 +76,7 @@ func initHeap(buffer []interface{}, compareToFunc CompareFunc, maxOnTop bool) In
 func (h *heap) Insert(elem interface{}) {
 	// Insert at the end, swift up
 	h.buffer = append(h.buffer, elem)
-	h.swiftUp(h.Length() - 1)
+	h.swiftUp(h.Size() - 1)
 }
 
 func (h *heap) Extract() interface{} {
@@ -52,18 +86,18 @@ func (h *heap) Extract() interface{} {
 
 	// Capture first, swap with last, shrink 1, swift down from top
 	first := h.buffer[0]
-	h.swap(0, h.Length() - 1)
-	h.buffer = h.buffer[:h.Length() - 1]
+	h.swap(0, h.Size() - 1)
+	h.buffer = h.buffer[:h.Size() - 1]
 	h.swiftDown(0)
 
 	return first
 }
 
 func (h *heap) IsEmpty() bool {
-	return h.Length() == 0
+	return h.Size() == 0
 }
 
-func (h * heap) Length() int {
+func (h * heap) Size() int {
 	return len(h.buffer)
 }
 
@@ -89,7 +123,7 @@ func (h * heap) swiftUp(index int) {
 
 func (h * heap) swiftDown(index int) {
 	// If at the leaf, done
-	if index >= h.Length() / 2 {
+	if index >= h.Size() / 2 {
 		return
 	}
 
@@ -117,11 +151,11 @@ func (h * heap) swiftDown(index int) {
 }
 
 func (h *heap) findTop(first int, second int) (int, bool) {
-	if first >= h.Length() {
+	if first >= h.Size() {
 		return second, false
 	}
 
-	if second >= h.Length() {
+	if second >= h.Size() {
 		return first, false
 	}
 
@@ -150,14 +184,14 @@ func (h * heap) swap(i,j int) {
 }
 
 func (h * heap) heapify() {
-	if h.Length() <= 1 {
+	if h.Size() <= 1 {
 		return
 	}
 
 	// leaf nodes are already heaps
 	// Start at first non-leaf node and go up to the root swifting up as needed
 	// Leaf nodes start at n/2 goes to n-1
-	for i := h.Length() / 2 - 1; i >= 0; i-- {
+	for i := h.Size() / 2 - 1; i >= 0; i-- {
 		h.swiftDown(i)
 	}
 }
