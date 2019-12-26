@@ -97,14 +97,17 @@ func (h * heap) swiftDown(index int) {
 	left := 2 * index + 1
 	right := 2 * index + 2
 
-	top, equal := h.findTop(parent, left)
+	top, equal := h.findTop(left, right)
 	if equal {
-		top, equal = h.findTop(parent, right)
+		top, equal = h.findTop(parent, left)
 		if equal {
 			return
 		}
 	} else {
-		top, _ = h.findTop(top, right)
+		top, equal = h.findTop(parent, top)
+		if equal {
+			return
+		}
 	}
 
 	if top != parent {
