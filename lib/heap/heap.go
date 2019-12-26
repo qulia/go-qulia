@@ -74,9 +74,9 @@ func initHeap(buffer []interface{}, compareToFunc CompareFunc, maxOnTop bool) In
 }
 
 func (h *heap) Insert(elem interface{}) {
-	// Insert at the end, swift up
+	// Insert at the end, sift up
 	h.buffer = append(h.buffer, elem)
-	h.swiftUp(h.Size() - 1)
+	h.siftUp(h.Size() - 1)
 }
 
 func (h *heap) Extract() interface{} {
@@ -84,11 +84,11 @@ func (h *heap) Extract() interface{} {
 		return nil
 	}
 
-	// Capture first, swap with last, shrink 1, swift down from top
+	// Capture first, swap with last, shrink 1, sift down from top
 	first := h.buffer[0]
 	h.swap(0, h.Size() - 1)
 	h.buffer = h.buffer[:h.Size() - 1]
-	h.swiftDown(0)
+	h.siftDown(0)
 
 	return first
 }
@@ -101,7 +101,7 @@ func (h * heap) Size() int {
 	return len(h.buffer)
 }
 
-func (h * heap) swiftUp(index int) {
+func (h * heap) siftUp(index int) {
 	// If we are already at the root, nothing to do
 	if index == 0 {
 		return
@@ -117,11 +117,11 @@ func (h * heap) swiftUp(index int) {
 
 	if top != parent {
 		h.swap(top, parent)
-		h.swiftUp(parent)
+		h.siftUp(parent)
 	}
 }
 
-func (h * heap) swiftDown(index int) {
+func (h * heap) siftDown(index int) {
 	// If at the leaf, done
 	if index >= h.Size() / 2 {
 		return
@@ -146,7 +146,7 @@ func (h * heap) swiftDown(index int) {
 
 	if top != parent {
 		h.swap(top, parent)
-		h.swiftDown(top)
+		h.siftDown(top)
 	}
 }
 
@@ -189,9 +189,9 @@ func (h * heap) heapify() {
 	}
 
 	// leaf nodes are already heaps
-	// Start at first non-leaf node and go up to the root swifting up as needed
+	// Start at first non-leaf node and go up to the root sifting up as needed
 	// Leaf nodes start at n/2 goes to n-1
 	for i := h.Size() / 2 - 1; i >= 0; i-- {
-		h.swiftDown(i)
+		h.siftDown(i)
 	}
 }
