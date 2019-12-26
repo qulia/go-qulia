@@ -44,9 +44,9 @@ func checkHeap(b *testing.B, genInput []interface{}, h heap.Interface) {
 		return buffer[i].(int) > buffer[j].(int)
 	})
 
-	assert.Equal(b, len(buffer), h.Length())
+	assert.Equal(b, len(buffer), h.Size())
 	index := 0
-	for h.Length() > 0{
+	for h.Size() > 0{
 		assert.Equal(b, buffer[index], h.Extract().(int))
 		index++
 	}
