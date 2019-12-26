@@ -16,8 +16,12 @@ func verify(t *testing.T, stack stack.Interface) {
 	stack.Push("strings")
 	stack.Push(false)
 
+	assert.Equal(t, false, stack.Peek().(bool))
 	assert.Equal(t, false, stack.Pop().(bool))
+	assert.Equal(t, "strings", stack.Peek().(string))
 	assert.Equal(t, "strings", stack.Pop().(string))
+	assert.Equal(t, 3, stack.Peek().(int))
 	assert.Equal(t, 3, stack.Pop().(int))
+	assert.Nil(t, stack.Peek())
 	assert.Nil(t, stack.Pop())
 }
