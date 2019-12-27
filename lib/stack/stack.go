@@ -1,13 +1,25 @@
 package stack
 
+// Interface implemented by stack, LIFO
 type  Interface interface {
+	// Push element to the stack
 	Push(x interface{})
+
+	// Pop element from the top of the stack
+	// If stack is empty, returns nil
 	Pop() interface{}
+
+	// Peek check the value of top element
 	Peek() interface{}
+
+	// IsEmpty returns true if stack is empty
 	IsEmpty() bool
-	Length() int
+
+	// Size returns number of elements in the stack
+	Size() int
 }
 
+// Implementation of stack.Interface
 type Stack struct {
 	elements []interface{}
 }
@@ -33,9 +45,9 @@ func (st *Stack) Peek() interface{} {
 }
 
 func (st *Stack) IsEmpty() bool {
-	return st.Length() == 0
+	return st.Size() == 0
 }
 
-func (st *Stack) Length() int {
+func (st *Stack) Size() int {
 	return len(st.elements)
 }
