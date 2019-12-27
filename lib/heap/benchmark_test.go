@@ -2,10 +2,8 @@ package heap_test
 
 import (
 	"math/rand"
-	"reflect"
 	"sort"
 	"testing"
-	"testing/quick"
 	"time"
 
 	"github.com/qulia/go-qulia/lib/heap"
@@ -14,16 +12,19 @@ import (
 )
 
 var sliceRand *rand.Rand
+const (
+	numsDefaultMin = -100000
+	numsDefaultMax = 100000
+	numsDefaultSize = 10000
+)
 func init() {
 	sliceRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 func BenchmarkHeapBasic(b *testing.B) {
-	randSlice, ok := quick.Value(reflect.ValueOf([]int{}).Type(), sliceRand)
-	assert.True(b, ok)
-	genInput := randSlice.Interface().([]int)
+	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 	var genInputInterface []interface{}
-	for _,elem := range genInput {
+	for _, elem := range genInput {
 		genInputInterface = append(genInputInterface, elem)
 	}
 	log.Infof("Size %d", len(genInputInterface))
@@ -32,16 +33,43 @@ func BenchmarkHeapBasic(b *testing.B) {
 	b.Run("Create heap from slice", func(b *testing.B) {
 		h := heap.NewMaxHeap(genInputInterface, intCompFunc)
 		b.StopTimer()
-		checkHeap(b, genInputInterface, h)
+		checkHeap(b, genInput, h)
 		b.StartTimer()
 	})
 }
 
-func checkHeap(b *testing.B, genInput []interface{}, h heap.Interface) {
-	buffer := make([]interface{}, len(genInput))
+func BenchmarkHeapPush(b *testing.B) {
+	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
+
+	log.Infof("Size %d", len(genInput))
+	//log.Info("Generated input %s", genInput)
+	b.ResetTimer()
+	b.Run("Create heap from slice", func(b *testing.B) {
+		h := heap.NewMaxHeap(nil, intCompFunc)
+		for _,elem := range genInput {
+			h.Insert(elem)
+		}
+		b.StopTimer()
+		checkHeap(b, genInput, h)
+		b.StartTimer()
+	})
+}
+
+func generateInput(size, min, max int) []int {
+	var result []int
+	for i := 0; i < size; i++ {
+		val := sliceRand.Intn(max - min) + min
+		result = append(result, val)
+	}
+
+	return result
+}
+
+func checkHeap(b *testing.B, genInput []int, h heap.Interface) {
+	buffer := make([]int, len(genInput))
 	copy(buffer, genInput)
 	sort.Slice(buffer, func(i, j int) bool {
-		return buffer[i].(int) > buffer[j].(int)
+		return buffer[i] > buffer[j]
 	})
 
 	assert.Equal(b, len(buffer), h.Size())

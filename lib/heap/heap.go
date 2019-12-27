@@ -61,6 +61,7 @@ func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface{
 	return initHeap(buffer, compareToFunc, true)
 }
 
+// 0 based heap structure, parent (n -1)/2; children 2n + 1, 2n + 2
 type heap struct {
 	maxOnTop bool
 	buffer []interface{}
@@ -108,7 +109,7 @@ func (h * heap) siftUp(index int) {
 	}
 
 	current := index
-	parent := current / 2
+	parent := (current - 1) / 2
 
 	top, equal := h.findTop(current, parent)
 	if equal {
