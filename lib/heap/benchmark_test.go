@@ -57,7 +57,7 @@ func BenchmarkHeapBasic(b *testing.B) {
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
-		h := heap.NewMaxHeap(genInputInterface, intCompFunc)
+		h := heap.NewMaxHeap(genInputInterface, heap.IntCompFunc)
 		b.StopTimer()
 		checkHeap(b, genInput, h)
 		b.StartTimer()
@@ -71,7 +71,7 @@ func BenchmarkHeapPush(b *testing.B) {
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
-		h := heap.NewMaxHeap(nil, intCompFunc)
+		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
 		for _,elem := range genInput {
 			h.Insert(elem)
 		}
@@ -102,7 +102,7 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 
 	b.ResetTimer()
 	b.Run("go-qulia/lib/heap", func(b *testing.B) {
-		h := heap.NewMaxHeap(nil, intCompFunc)
+		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
 		for _,elem := range genInput {
 			h.Insert(elem)
 		}

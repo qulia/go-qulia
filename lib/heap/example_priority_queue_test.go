@@ -16,7 +16,7 @@ var (
 	jobCompFunc = func(first, second interface{}) int {
 		firstJob :=first.(job)
 		secondJob := second.(job)
-		return intCompFunc(firstJob.priority, secondJob.priority)
+		return heap.IntCompFunc(firstJob.priority, secondJob.priority)
 	}
 )
 
