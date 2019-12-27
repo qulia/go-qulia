@@ -18,7 +18,9 @@ type Interface interface {
 	IsEmpty() bool
 }
 
-// CompareFunc definition used to decide heap configuration
+// CompareFunc definition used to decide heap configuration;
+// function takes two elements and returns positive value if first > second,
+// negative value if first < second, 0 otherwise
 type CompareFunc func(first, second interface{}) int
 
 // MinHeap is heap structure with min element is top
