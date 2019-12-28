@@ -18,7 +18,7 @@ type city struct {
 }
 
 // This example uses graph for finding connected components in a collection based on certain criteria
-func ExampleGraph() {
+func ExampleGraph_connected_components() {
 	// Given a collection of cities, find the connected groups that are in the same country and population 1000 apart with another city
 	cities := []city{
 		{name: "c1", country: "country1", population: 10000},
@@ -53,8 +53,8 @@ func ExampleGraph() {
 	// Now find connected groups of cities
 	var connected [][]city
 	for _, node := range cityGraph.Nodes {
-		if _, ok := (*node.MData)[isVisited]; !ok {
-			(*node.MData)[isVisited] = true
+		if _, ok := node.MData[isVisited]; !ok {
+			node.MData[isVisited] = true
 			// Not visited yet
 			connectedGroup := []city{node.Data.(city)}
 			collectConnected(node, &connectedGroup)
@@ -87,9 +87,9 @@ func collectConnected(node *graph.Node, connectedGroup *[]city) {
 
 	for _, vertex := range node.EdgesOut {
 		otherNode := vertex.Target
-		if _, ok := (*otherNode.MData)[isVisited]; !ok {
+		if _, ok := otherNode.MData[isVisited]; !ok {
 			// Not visited yet
-			(*otherNode.MData)[isVisited] = true
+			otherNode.MData[isVisited] = true
 			*connectedGroup = append(*connectedGroup, otherNode.Data.(city))
 			collectConnected(otherNode, connectedGroup)
 		}
