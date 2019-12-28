@@ -14,18 +14,20 @@ import (
 )
 
 var sliceRand *rand.Rand
+
 const (
-	numsDefaultMin = -100000
-	numsDefaultMax = 100000
+	numsDefaultMin  = -100000
+	numsDefaultMax  = 100000
 	numsDefaultSize = 10000
 )
+
 func init() {
 	sliceRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 /* Copied from https://golang.org/pkg/container/heap/
- for benchmark comparison
- */
+for benchmark comparison
+*/
 // An IntHeap is a min-heap of ints.
 type IntHeap []int
 
@@ -72,7 +74,7 @@ func BenchmarkHeapPush(b *testing.B) {
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
 		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
-		for _,elem := range genInput {
+		for _, elem := range genInput {
 			h.Insert(elem)
 		}
 		b.StopTimer()
@@ -90,7 +92,7 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 	b.Run("container/heap", func(b *testing.B) {
 		stdh := &IntHeap{}
 		contheap.Init(stdh)
-		for _,elem := range genInput {
+		for _, elem := range genInput {
 			contheap.Push(stdh, elem)
 		}
 
@@ -103,7 +105,7 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 	b.ResetTimer()
 	b.Run("go-qulia/lib/heap", func(b *testing.B) {
 		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
-		for _,elem := range genInput {
+		for _, elem := range genInput {
 			h.Insert(elem)
 		}
 
@@ -118,7 +120,7 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 func generateInput(size, min, max int) []int {
 	var result []int
 	for i := 0; i < size; i++ {
-		val := sliceRand.Intn(max - min) + min
+		val := sliceRand.Intn(max-min) + min
 		result = append(result, val)
 	}
 
@@ -134,7 +136,7 @@ func checkHeap(b *testing.B, genInput []int, h heap.Interface) {
 
 	assert.Equal(b, len(buffer), h.Size())
 	index := 0
-	for h.Size() > 0{
+	for h.Size() > 0 {
 		assert.Equal(b, buffer[index], h.Extract().(int))
 		index++
 	}

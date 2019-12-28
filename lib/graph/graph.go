@@ -29,12 +29,12 @@ type Node struct {
 
 // Edge from source to target with metadata
 type Edge struct {
-	Source *Node
-	Target *Node
+	Source   *Node
+	Target   *Node
 	Metadata *Metadata
 }
 
-func NewNode(name string, data interface{}) *Node{
+func NewNode(name string, data interface{}) *Node {
 	node := Node{
 		Name:     name,
 		Data:     data,
@@ -46,7 +46,7 @@ func NewNode(name string, data interface{}) *Node{
 	return &node
 }
 
-func NewNodeWithMetadata(name string, data interface{}, mData *Metadata) *Node{
+func NewNodeWithMetadata(name string, data interface{}, mData *Metadata) *Node {
 	node := NewNode(name, data)
 	node.MData = mData
 	return node
@@ -95,9 +95,9 @@ func (g *Graph) AddBidirectionalWithMetadata(node1, node2 *Node, mData12, mData2
 func (g *Graph) addEdge(from, to *Node, mData *Metadata) {
 	if to != nil && from != nil {
 		v := &Edge{
-			Source: from,
-			Target: to,
-			Metadata:   mData,
+			Source:   from,
+			Target:   to,
+			Metadata: mData,
 		}
 
 		g.Nodes[from.Name].EdgesOut[to.Name] = v

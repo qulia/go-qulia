@@ -13,26 +13,26 @@ const (
 
 type city struct {
 	name, country string
-	population int
+	population    int
 }
 
 // This example uses graph for finding connected components in a collection based on certain criteria
 func ExampleGraph() {
 	// Given a collection of cities, find the connected groups that are in the same country and population 1000 apart with another city
-	cities := []city {
-		{name:"c1", country:"country1", population:10000},
-		{name:"c2", country:"country1", population:20000},
-		{name:"c3", country:"country1", population:10010},
-		{name:"c4", country:"country1", population:11010},  // c1 is connected with c3, c3 connected with c4, therefore c1, c3, c4 are in the same group
-		{name:"c5", country:"country1", population:20010},
-		{name:"c6", country:"country2", population:20010},
-		{name:"c7", country:"country3", population:20010},
-		{name:"c8", country:"country3", population:20011},
+	cities := []city{
+		{name: "c1", country: "country1", population: 10000},
+		{name: "c2", country: "country1", population: 20000},
+		{name: "c3", country: "country1", population: 10010},
+		{name: "c4", country: "country1", population: 11010}, // c1 is connected with c3, c3 connected with c4, therefore c1, c3, c4 are in the same group
+		{name: "c5", country: "country1", population: 20010},
+		{name: "c6", country: "country2", population: 20010},
+		{name: "c7", country: "country3", population: 20010},
+		{name: "c8", country: "country3", population: 20011},
 	}
 
 	cityGraph := graph.NewGraph()
 	// add cities to the graph
-	for _, currentCity :=range cities{
+	for _, currentCity := range cities {
 		newNode := graph.NewNode(currentCity.name, currentCity)
 		for _, otherNode := range cityGraph.Nodes {
 			otherCity := otherNode.Data.(city)
@@ -79,7 +79,7 @@ func ExampleGraph() {
 }
 
 // recursively visit all reachable nodes and add to connectedgroup
-func collectConnected(node *graph.Node, connectedGroup *[]city){
+func collectConnected(node *graph.Node, connectedGroup *[]city) {
 	if node == nil {
 		return
 	}
@@ -95,8 +95,7 @@ func collectConnected(node *graph.Node, connectedGroup *[]city){
 	}
 }
 
-func connected(c1, c2 city) bool{
+func connected(c1, c2 city) bool {
 	// assume case sensitive comparison
-	return c1.country == c2.country && int(math.Abs(float64(c1.population - c2.population))) <= 1000
+	return c1.country == c2.country && int(math.Abs(float64(c1.population-c2.population))) <= 1000
 }
-

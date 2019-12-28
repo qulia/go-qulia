@@ -1,7 +1,7 @@
 package stack
 
 // Interface implemented by stack, LIFO
-type  Interface interface {
+type Interface interface {
 	// Push element to the stack
 	Push(x interface{})
 
@@ -32,8 +32,8 @@ func (st *Stack) Pop() interface{} {
 	if st.IsEmpty() {
 		return nil
 	}
-	elem := st.elements[len(st.elements) - 1]
-	st.elements = st.elements[:len(st.elements) - 1]
+	elem := st.elements[len(st.elements)-1]
+	st.elements = st.elements[:len(st.elements)-1]
 	return elem
 }
 
@@ -41,7 +41,7 @@ func (st *Stack) Peek() interface{} {
 	if st.IsEmpty() {
 		return nil
 	}
-	return st.elements[len(st.elements) - 1]
+	return st.elements[len(st.elements)-1]
 }
 
 func (st *Stack) IsEmpty() bool {

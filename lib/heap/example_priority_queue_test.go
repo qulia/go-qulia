@@ -6,15 +6,15 @@ import (
 	"github.com/qulia/go-qulia/lib/heap"
 )
 
-type job struct{
-	priority int
-	name string
+type job struct {
+	priority   int
+	name       string
 	department string
 }
 
 var (
 	jobCompFunc = func(first, second interface{}) int {
-		firstJob :=first.(job)
+		firstJob := first.(job)
 		secondJob := second.(job)
 		return heap.IntCompFunc(firstJob.priority, secondJob.priority)
 	}
@@ -22,8 +22,8 @@ var (
 
 // This example initializes the heap with list of jobs and pushes another one with Insert method
 // With the provided comparison method, the jobs with low priority ones are extracted first
-func ExampleMinHeap()  {
-	jobs := []interface{} {
+func ExampleMinHeap() {
+	jobs := []interface{}{
 		job{
 			priority:   4,
 			name:       "JobA",
