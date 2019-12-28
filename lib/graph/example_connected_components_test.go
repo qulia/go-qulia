@@ -2,9 +2,10 @@ package graph_test
 
 import (
 	"fmt"
-	"github.com/qulia/go-qulia/lib/graph"
 	"math"
 	"sort"
+
+	"github.com/qulia/go-qulia/lib/graph"
 )
 
 const (

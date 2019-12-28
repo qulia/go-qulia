@@ -3,6 +3,7 @@ package heap_test
 
 import (
 	"fmt"
+
 	"github.com/qulia/go-qulia/lib/heap"
 )
 
