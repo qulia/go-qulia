@@ -9,7 +9,7 @@ type Interface interface {
 	Insert(interface{})
 
 	// Extract top element from the heap
-	Extract()interface{}
+	Extract() interface{}
 
 	// Size of the heap
 	Size() int
@@ -54,7 +54,7 @@ type MaxHeap struct {
 //
 // compareToFunc: function that takes two entries and returns positive value if first > second,
 // negative value if first < second, 0 otherwise
-func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface{
+func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface {
 	if compareToFunc == nil {
 		log.Fatal("Nil compareToFunc param")
 	}
@@ -65,13 +65,13 @@ func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface{
 
 // 0 based heap structure, parent (n -1)/2; children 2n + 1, 2n + 2
 type heap struct {
-	maxOnTop bool
-	buffer []interface{}
+	maxOnTop    bool
+	buffer      []interface{}
 	compareFunc CompareFunc
 }
 
 func initHeap(buffer []interface{}, compareToFunc CompareFunc, maxOnTop bool) Interface {
-	h := heap{buffer:buffer, compareFunc:compareToFunc, maxOnTop:maxOnTop}
+	h := heap{buffer: buffer, compareFunc: compareToFunc, maxOnTop: maxOnTop}
 	h.heapify()
 	return &h
 }
@@ -89,8 +89,8 @@ func (h *heap) Extract() interface{} {
 
 	// Capture first, swap with last, shrink 1, sift down from top
 	first := h.buffer[0]
-	h.swap(0, h.Size() - 1)
-	h.buffer = h.buffer[:h.Size() - 1]
+	h.swap(0, h.Size()-1)
+	h.buffer = h.buffer[:h.Size()-1]
 	h.siftDown(0)
 
 	return first
@@ -100,11 +100,11 @@ func (h *heap) IsEmpty() bool {
 	return h.Size() == 0
 }
 
-func (h * heap) Size() int {
+func (h *heap) Size() int {
 	return len(h.buffer)
 }
 
-func (h * heap) siftUp(index int) {
+func (h *heap) siftUp(index int) {
 	// If we are already at the root, nothing to do
 	if index == 0 {
 		return
@@ -124,15 +124,15 @@ func (h * heap) siftUp(index int) {
 	}
 }
 
-func (h * heap) siftDown(index int) {
+func (h *heap) siftDown(index int) {
 	// If at the leaf, done
-	if index >= h.Size() / 2 {
+	if index >= h.Size()/2 {
 		return
 	}
 
 	parent := index
-	left := 2 * index + 1
-	right := 2 * index + 2
+	left := 2*index + 1
+	right := 2*index + 2
 
 	top, equal := h.findTop(left, right)
 	if equal {
@@ -180,13 +180,13 @@ func (h *heap) findTop(first int, second int) (int, bool) {
 	return top, false
 }
 
-func (h * heap) swap(i,j int) {
+func (h *heap) swap(i, j int) {
 	tmp := h.buffer[i]
 	h.buffer[i] = h.buffer[j]
 	h.buffer[j] = tmp
 }
 
-func (h * heap) heapify() {
+func (h *heap) heapify() {
 	if h.Size() <= 1 {
 		return
 	}
@@ -194,7 +194,7 @@ func (h * heap) heapify() {
 	// leaf nodes are already heaps
 	// Start at first non-leaf node and go up to the root sifting up as needed
 	// Leaf nodes start at n/2 goes to n-1
-	for i := h.Size() / 2 - 1; i >= 0; i-- {
+	for i := h.Size()/2 - 1; i >= 0; i-- {
 		h.siftDown(i)
 	}
 }
