@@ -1,9 +1,10 @@
 package stack_test
 
 import (
+	"testing"
+
 	"github.com/qulia/go-qulia/lib/stack"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestStackBasic(t *testing.T) {
