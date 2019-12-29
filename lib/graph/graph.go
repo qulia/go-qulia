@@ -1,5 +1,18 @@
 package graph
 
+type Interface interface {
+	// GetNodes returns map of all nodes in the graph
+	GetNodes() map[string]*Node
+
+	// Add relation from source to target node
+	// if target is nil just add the node with no connection
+	Add(source, target *Node)
+
+	// Add bidirectional relation between node1 and node2, equivalent to calling
+	// Add(node1, node2) Add(node2, node1)
+	AddBidirectional(node1, node2 *Node)
+}
+
 // Metadata to append properties,tags to Graph, Node, Edge
 type Metadata map[string]interface{}
 
@@ -34,6 +47,7 @@ type Edge struct {
 	Metadata Metadata
 }
 
+// NewNode creates a node later to be added to the graph
 func NewNode(name string, data interface{}) *Node {
 	node := Node{
 		Name:     name,
@@ -46,9 +60,11 @@ func NewNode(name string, data interface{}) *Node {
 	return &node
 }
 
+// NewGraph initialized graph structure
 func NewGraph() *Graph {
 	g := Graph{}
 	g.Nodes = make(map[string]*Node)
+	g.MData = Metadata{}
 	return &g
 }
 
@@ -70,8 +86,18 @@ func (g *Graph) AddBidirectional(node1, node2 *Node) {
 	g.addEdge(node2, node1)
 }
 
+// GetNodes
+func (g *Graph) GetNodes() map[string]*Node {
+	return g.Nodes
+}
+
 func (g *Graph) addEdge(from, to *Node) {
 	if to != nil && from != nil {
+		if _, ok := g.Nodes[from.Name].EdgesOut[to.Name]; ok {
+			// Already has edge from source to dest
+			return
+		}
+
 		v := Edge{
 			Source:   from,
 			Target:   to,
