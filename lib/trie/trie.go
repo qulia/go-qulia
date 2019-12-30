@@ -1,22 +1,34 @@
 package trie
 
-import "github.com/qulia/go-qulia/lib"
-
-const (
-	root     = "root"
-	rootChar = '.'
+import (
+	"github.com/qulia/go-qulia/lib"
 )
 
-type UpdateMDataFunc func(char uint8, word string, metadata lib.Metadata)
+const (
+	root          = "root"
+	rootChar      = '\u00AE'
+	terminate     = "terminate"
+	terminateChar = '\u00A5'
+)
+
+type UpdateMDataFunc func(char rune, word []rune, metadata lib.Metadata)
 
 type Interface interface {
-	Insert(word string)
-	Search(prefix string) (lib.Metadata, bool)
+	// Inserts a word into trie
+	Insert(word []rune)
+
+	// Searches for prefix in the trie, indicated by bool
+	// if exist, returns metadata stored corresponding to last char
+	Search(prefix []rune) (lib.Metadata, bool)
+
+	// Searches for whole word in the trie,
+	// returns true only if the word is added to trie before with all characters
+	Contains(word []rune) bool
 }
 
 type node struct {
-	char     uint8
-	children map[uint8]*node
+	char     rune
+	children map[rune]*node
 	mData    lib.Metadata
 }
 
@@ -33,16 +45,31 @@ func NewTrie(updateMDataFunc UpdateMDataFunc) *Trie {
 	return &t
 }
 
-func (t *Trie) Insert(word string) {
+func (t *Trie) Insert(word []rune) {
 	t.root.insert(word, 0, t.updateMDataFunc)
 }
 
-func (t *Trie) Search(prefix string) (lib.Metadata, bool) {
-	return t.root.search(prefix, 0)
+func (t *Trie) Search(prefix []rune) (lib.Metadata, bool) {
+	if foundAt, ok := t.root.search(prefix, 0); ok {
+		return foundAt.mData, true
+	}
+
+	return nil, false
 }
 
-func (n *node) insert(word string, index int, updateMDataFunc UpdateMDataFunc) {
+func (t *Trie) Contains(word []rune) bool {
+	if foundAt, ok := t.root.search(word, 0); ok {
+		if foundAt.hasTerminate() {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (n *node) insert(word []rune, index int, updateMDataFunc UpdateMDataFunc) {
 	if index >= len(word) {
+		n.checkAndAddTerminate()
 		return
 	}
 
@@ -55,15 +82,15 @@ func (n *node) insert(word string, index int, updateMDataFunc UpdateMDataFunc) {
 	n.children[char].insert(word, index+1, updateMDataFunc)
 }
 
-func (n *node) checkAndCallUpdateMDataFunc(updateMDataFunc UpdateMDataFunc, word string) {
+func (n *node) checkAndCallUpdateMDataFunc(updateMDataFunc UpdateMDataFunc, word []rune) {
 	if updateMDataFunc != nil {
 		updateMDataFunc(n.char, word, n.mData)
 	}
 }
 
-func (n *node) search(prefix string, index int) (lib.Metadata, bool) {
+func (n *node) search(prefix []rune, index int) (*node, bool) {
 	if index == len(prefix) {
-		return n.mData, true
+		return n, true
 	}
 
 	char := prefix[index]
@@ -74,11 +101,22 @@ func (n *node) search(prefix string, index int) (lib.Metadata, bool) {
 	return nil, false
 }
 
-func newNode(char uint8) *node {
+func (n *node) checkAndAddTerminate() {
+	if !n.hasTerminate() {
+		n.children[terminateChar] = createTerminateNode()
+	}
+}
+
+func (n *node) hasTerminate() bool {
+	_, ok := n.children[terminateChar]
+	return ok
+}
+
+func newNode(char rune) *node {
 	n := node{
 		char:     char,
 		mData:    lib.Metadata{},
-		children: make(map[uint8]*node),
+		children: make(map[rune]*node),
 	}
 
 	return &n
@@ -87,5 +125,11 @@ func newNode(char uint8) *node {
 func createRootNode() *node {
 	n := newNode(rootChar)
 	n.mData[root] = true
+	return n
+}
+
+func createTerminateNode() *node {
+	n := newNode(terminateChar)
+	n.mData[terminate] = true
 	return n
 }

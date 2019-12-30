@@ -10,16 +10,13 @@ import (
 
 func TestTrieBasic(t *testing.T) {
 	words := []string{"abc", "abcd", "efg", "e", "fg", "hijklm"}
-	testTrie := trie.NewTrie(func(_ uint8, word string, mData lib.Metadata) {
+	testTrie := trie.NewTrie(func(_ rune, word []rune, mData lib.Metadata) {
 		if _, ok := mData["words"]; !ok {
 			mData["words"] = []string{}
 		}
-		mData["words"] = append(mData["words"].([]string), word)
+		mData["words"] = append(mData["words"].([]string), string(word))
 	})
-
-	for _, word := range words {
-		testTrie.Insert(word)
-	}
+	addWords(words, testTrie)
 
 	checkPrefix(t, testTrie, "ab", []string{"abc", "abcd"})
 	checkPrefix(t, testTrie, "e", []string{"efg", "e"})
@@ -27,8 +24,40 @@ func TestTrieBasic(t *testing.T) {
 }
 
 func checkPrefix(t *testing.T, testTrie trie.Interface, prefix string, expectedWords []string) {
-	mData, ok := testTrie.Search(prefix)
+	mData, ok := testTrie.Search([]rune(prefix))
 	assert.True(t, ok)
 	wordsWithPrefix := mData["words"].([]string)
 	assert.Equal(t, expectedWords, wordsWithPrefix)
+}
+
+func TestTriePrefixDoesNotExist(t *testing.T) {
+	words := []string{"abc", "abcd", "efg", "e", "fg", "hijklm"}
+	testTrie := trie.NewTrie(nil)
+	addWords(words, testTrie)
+
+	_, ok := testTrie.Search([]rune("x"))
+	assert.False(t, ok)
+}
+
+func addWords(words []string, testTrie *trie.Trie) {
+	for _, word := range words {
+		testTrie.Insert([]rune(word))
+	}
+}
+
+func TestTrie_Contains(t *testing.T) {
+	words := []string{"abc", "abcd", "efg", "e", "fg", "hijklm"}
+	testTrie := trie.NewTrie(nil)
+	addWords(words, testTrie)
+
+	for _, word := range words {
+		assert.True(t, testTrie.Contains([]rune(word)))
+	}
+
+	assert.False(t, testTrie.Contains([]rune("")))
+	assert.False(t, testTrie.Contains([]rune("ab")))
+	assert.False(t, testTrie.Contains([]rune("fg ")))
+
+	testTrie.Insert([]rune(""))
+	assert.True(t, testTrie.Contains([]rune("")))
 }

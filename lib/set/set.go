@@ -6,19 +6,42 @@ import (
 )
 
 type Interface interface {
+	// Add element to the set
 	Add(interface{})
+
+	//Remove element from the set
 	Remove(interface{})
+
+	// CopyTo another set
 	CopyTo(other Interface)
+
+	// Returns the union set with other set
 	Union(other Interface) Interface
+
+	// Returns the intersection set with other set
 	Intersection(other Interface) Interface
+
+	// Is current set subset (contained in) of the provided set
 	IsSubsetOf(other Interface) bool
+
+	// Is current set superset of the provided set
 	IsSupersetOf(other Interface) bool
-	Contains(interface{}) (int, bool)
+
+	// Returns true if set contains the element, -1, false otherwise
+	Contains(interface{}) bool
+
+	// Size of the set
 	Size() int
+
+	// Creates a slice from the set
 	ToSlice() []interface{}
+
+	// Initializes the set from slice
 	FromSlice([]interface{})
 }
 
+// Set is implementation of set.Interface
+// Comparisons to match elements are based on KeyFunc
 type Set struct {
 	entries map[int]interface{}
 	keyFunc lib.KeyFunc
@@ -42,19 +65,19 @@ func (s *Set) Intersection(other Interface) Interface {
 	lenS := s.Size()
 	lenOther := other.Size()
 
-	var small Interface
-	var large Interface
+	var small *Set
+	var large *Set
 	if lenS < lenOther {
 		small = s
-		large = other
+		large = other.(*Set)
 	} else {
-		small = other
+		small = other.(*Set)
 		large = s
 	}
 
 	intersectionSet := NewSet(s.keyFunc)
-	for key, elem := range small.(*Set).entries {
-		if keyOther, ok := large.Contains(elem); ok {
+	for key, elem := range small.entries {
+		if keyOther, ok := large.contains(elem); ok {
 			if key != keyOther {
 				log.Warnf("keys do not match for %v %d %d", elem, key, keyOther)
 			}
@@ -73,7 +96,12 @@ func (s *Set) IsSupersetOf(other Interface) bool {
 	return other.IsSubsetOf(s)
 }
 
-func (s *Set) Contains(elem interface{}) (int, bool) {
+func (s *Set) Contains(elem interface{}) bool {
+	_, ok := s.contains(elem)
+	return ok
+}
+
+func (s *Set) contains(elem interface{}) (int, bool) {
 	key := s.keyFunc(elem)
 	_, ok := s.entries[key]
 	return key, ok
@@ -102,13 +130,13 @@ func (s *Set) Size() int {
 }
 
 func (s *Set) Add(elem interface{}) {
-	if key, ok := s.Contains(elem); !ok {
+	if key, ok := s.contains(elem); !ok {
 		s.entries[key] = elem
 	}
 }
 
 func (s *Set) Remove(elem interface{}) {
-	if key, ok := s.Contains(elem); ok {
+	if key, ok := s.contains(elem); ok {
 		delete(s.entries, key)
 	}
 }
