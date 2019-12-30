@@ -4,6 +4,8 @@ package heap_test
 import (
 	"fmt"
 
+	"github.com/qulia/go-qulia/lib"
+
 	"github.com/qulia/go-qulia/lib/heap"
 )
 
@@ -17,7 +19,7 @@ var (
 	jobCompFunc = func(first, second interface{}) int {
 		firstJob := first.(job)
 		secondJob := second.(job)
-		return heap.IntCompFunc(firstJob.priority, secondJob.priority)
+		return lib.IntCompFunc(firstJob.priority, secondJob.priority)
 	}
 )
 

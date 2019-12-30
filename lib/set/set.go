@@ -1,6 +1,7 @@
 package set
 
 import (
+	"github.com/qulia/go-qulia/lib"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,11 +19,9 @@ type Interface interface {
 	FromSlice([]interface{})
 }
 
-type KeyFunc func(interface{}) int
-
 type Set struct {
 	entries map[int]interface{}
-	keyFunc KeyFunc
+	keyFunc lib.KeyFunc
 }
 
 func (s *Set) FromSlice(input []interface{}) {
@@ -89,7 +88,7 @@ func (s *Set) ToSlice() []interface{} {
 	return res
 }
 
-func NewSet(keyFunc KeyFunc) *Set {
+func NewSet(keyFunc lib.KeyFunc) *Set {
 	set := Set{
 		entries: make(map[int]interface{}),
 		keyFunc: keyFunc,
