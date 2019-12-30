@@ -29,6 +29,8 @@ func TestSetBasic(t *testing.T) {
 
 	assert.Equal(t, evenNums.Size(), 4)
 	assert.Equal(t, oddNums.Size(), 5)
+	assert.True(t, oddNums.Contains(3))
+	assert.False(t, oddNums.Contains(2))
 	assert.Equal(t, 0, evenNums.Intersection(oddNums).Size())
 	assert.Equal(t, []interface{}{2}, primeAndEvenNums)
 	assert.Equal(t, []interface{}{3, 5, 7}, oddAndPrimeEvenNums)
