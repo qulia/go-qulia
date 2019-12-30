@@ -1,5 +1,7 @@
 package graph
 
+import "github.com/qulia/go-qulia/lib"
+
 type Interface interface {
 	// GetNodes returns map of all nodes in the graph
 	GetNodes() map[string]*Node
@@ -13,13 +15,10 @@ type Interface interface {
 	AddBidirectional(node1, node2 *Node)
 }
 
-// Metadata to append properties,tags to Graph, Node, Edge
-type Metadata map[string]interface{}
-
 // Graph with Nodes and metadata
 type Graph struct {
 	Nodes map[string]*Node
-	MData Metadata
+	MData lib.Metadata
 }
 
 // Node with name, object holding the data, connections in and out, and metadata
@@ -37,14 +36,14 @@ type Node struct {
 
 	// This is free form map to set values while traversing graph, e.g. "isVisited = true"
 	// Normally would be used for more advanced scenarios
-	MData Metadata
+	MData lib.Metadata
 }
 
 // Edge from source to target with metadata
 type Edge struct {
 	Source   *Node
 	Target   *Node
-	Metadata Metadata
+	Metadata lib.Metadata
 }
 
 // NewNode creates a node later to be added to the graph
@@ -52,7 +51,7 @@ func NewNode(name string, data interface{}) *Node {
 	node := Node{
 		Name:     name,
 		Data:     data,
-		MData:    Metadata{},
+		MData:    lib.Metadata{},
 		EdgesIn:  make(map[string]Edge),
 		EdgesOut: make(map[string]Edge),
 	}
@@ -64,7 +63,7 @@ func NewNode(name string, data interface{}) *Node {
 func NewGraph() *Graph {
 	g := Graph{}
 	g.Nodes = make(map[string]*Node)
-	g.MData = Metadata{}
+	g.MData = lib.Metadata{}
 	return &g
 }
 
@@ -101,7 +100,7 @@ func (g *Graph) addEdge(from, to *Node) {
 		v := Edge{
 			Source:   from,
 			Target:   to,
-			Metadata: Metadata{},
+			Metadata: lib.Metadata{},
 		}
 
 		g.Nodes[from.Name].EdgesOut[to.Name] = v
