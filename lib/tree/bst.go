@@ -9,7 +9,7 @@ import (
 // Element comparison is based on OrderFunc provided to NewBST method
 type BSTInterface interface {
 	// Adds new elem to the tree, will not check if same val already exists
-	Insert(interface{})
+	Insert(interface{}) *Node
 
 	// Returns the first node that matches
 	Search(interface{}) *Node
@@ -68,7 +68,7 @@ func (bst *BST) ToSlice() []interface{} {
 }
 
 func (bst *BST) Traverse(call func(interface{})) {
-	Visit(bst.root, call)
+	VisitInOrder(bst.root, call)
 }
 
 func (bst *BST) Insert(elem interface{}) *Node {

@@ -12,25 +12,13 @@ import (
 
 func TestSetBasic(t *testing.T) {
 	evenNums := set.NewSet(lib.IntKeyFunc)
-	evenNums.Add(2)
-	evenNums.Add(4)
-	evenNums.Add(6)
-	evenNums.Add(6) // add twice, no-op
-	evenNums.Add(8)
+	addNums(evenNums, []int{2, 4, 6, 8})
 
 	oddNums := set.NewSet(lib.IntKeyFunc)
-	oddNums.Add(1)
-	oddNums.Add(3)
-	oddNums.Add(3) // add twice, no-op
-	oddNums.Add(5)
-	oddNums.Add(7)
-	oddNums.Add(9)
+	addNums(oddNums, []int{1, 3, 5, 7, 9})
 
 	primeNums := set.NewSet(lib.IntKeyFunc)
-	primeNums.Add(2)
-	primeNums.Add(3)
-	primeNums.Add(5)
-	primeNums.Add(7)
+	addNums(primeNums, []int{2, 3, 5, 7})
 
 	nums := set.NewSet(lib.IntKeyFunc)
 	nums.FromSlice([]interface{}{1, 2, 3, 4, 5, 6, 7, 8, 9})
@@ -53,6 +41,18 @@ func TestSetBasic(t *testing.T) {
 	assert.False(t, evenNums.IsSubsetOf(nums))
 	nums.Remove(3)
 	assert.False(t, nums.IsSupersetOf(oddNums))
+}
+
+func TestSetDuplicate(t *testing.T) {
+	nums := set.NewSet(lib.IntKeyFunc)
+	addNums(nums, []int{8, 2, 4, 4, 6, 8})
+	assert.Equal(t, 4, nums.Size())
+}
+
+func addNums(s *set.Set, nums []int) {
+	for _, num := range nums {
+		s.Add(num)
+	}
 }
 
 func sortSlice(input []interface{}) []interface{} {
