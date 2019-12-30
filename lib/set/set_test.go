@@ -4,19 +4,21 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/qulia/go-qulia/lib"
+
 	"github.com/qulia/go-qulia/lib/set"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSetBasic(t *testing.T) {
-	evenNums := set.NewSet(set.IntKeyFunc)
+	evenNums := set.NewSet(lib.IntKeyFunc)
 	evenNums.Add(2)
 	evenNums.Add(4)
 	evenNums.Add(6)
 	evenNums.Add(6) // add twice, no-op
 	evenNums.Add(8)
 
-	oddNums := set.NewSet(set.IntKeyFunc)
+	oddNums := set.NewSet(lib.IntKeyFunc)
 	oddNums.Add(1)
 	oddNums.Add(3)
 	oddNums.Add(3) // add twice, no-op
@@ -24,13 +26,13 @@ func TestSetBasic(t *testing.T) {
 	oddNums.Add(7)
 	oddNums.Add(9)
 
-	primeNums := set.NewSet(set.IntKeyFunc)
+	primeNums := set.NewSet(lib.IntKeyFunc)
 	primeNums.Add(2)
 	primeNums.Add(3)
 	primeNums.Add(5)
 	primeNums.Add(7)
 
-	nums := set.NewSet(set.IntKeyFunc)
+	nums := set.NewSet(lib.IntKeyFunc)
 	nums.FromSlice([]interface{}{1, 2, 3, 4, 5, 6, 7, 8, 9})
 
 	primeAndEvenNums := sortSlice(evenNums.Intersection(primeNums).ToSlice())

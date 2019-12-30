@@ -4,6 +4,8 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/qulia/go-qulia/lib"
+
 	"github.com/qulia/go-qulia/lib/heap"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +17,7 @@ var (
 
 func TestMaxHeapBasic(t *testing.T) {
 	input := []interface{}{3, 4, 7, 1, 0, -1}
-	testHeap := heap.NewMaxHeap(input, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap(input, lib.IntCompFunc)
 
 	assert.Equal(t, 7, testHeap.Extract().(int))
 	assert.Equal(t, 4, testHeap.Extract().(int))
@@ -28,7 +30,7 @@ func TestMaxHeapBasic(t *testing.T) {
 
 func TestMinHeapBasic(t *testing.T) {
 	input := []interface{}{3, 4, 7, 1, 0, -1}
-	testHeap := heap.NewMinHeap(input, heap.IntCompFunc)
+	testHeap := heap.NewMinHeap(input, lib.IntCompFunc)
 
 	assert.Equal(t, -1, testHeap.Extract().(int))
 	assert.Equal(t, 0, testHeap.Extract().(int))
@@ -40,7 +42,7 @@ func TestMinHeapBasic(t *testing.T) {
 }
 
 func TestHeapPush(t *testing.T) {
-	testHeap := heap.NewMaxHeap(nil, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap(nil, lib.IntCompFunc)
 
 	input := []interface{}{3, 4, -1, 7, 7, 1, 0, -1, 4}
 	for _, val := range input {
@@ -61,7 +63,7 @@ func TestHeapPush(t *testing.T) {
 
 func TestMaxHeapWithRepeatingNumbers(t *testing.T) {
 	input := []interface{}{3, 4, -1, 7, 7, 1, 0, -1, 4}
-	testHeap := heap.NewMaxHeap(input, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap(input, lib.IntCompFunc)
 
 	assert.Equal(t, 7, testHeap.Extract().(int))
 	assert.Equal(t, 7, testHeap.Extract().(int))
@@ -76,7 +78,7 @@ func TestMaxHeapWithRepeatingNumbers(t *testing.T) {
 }
 
 func TestHeapPushAllEqual(t *testing.T) {
-	testHeap := heap.NewMaxHeap(nil, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap(nil, lib.IntCompFunc)
 
 	for i := 0; i < 10; i++ {
 		testHeap.Insert(4)
@@ -89,7 +91,7 @@ func TestHeapPushAllEqual(t *testing.T) {
 }
 
 func TestMaxHeapAllEqual(t *testing.T) {
-	testHeap := heap.NewMaxHeap([]interface{}{4, 4, 4, 4, 4}, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap([]interface{}{4, 4, 4, 4, 4}, lib.IntCompFunc)
 	for i := 0; i < 5; i++ {
 		assert.Equal(t, 4, testHeap.Extract().(int))
 	}
@@ -97,20 +99,20 @@ func TestMaxHeapAllEqual(t *testing.T) {
 }
 
 func TestMaxHeapSingleElem(t *testing.T) {
-	testHeap := heap.NewMaxHeap([]interface{}{4}, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap([]interface{}{4}, lib.IntCompFunc)
 	assert.Equal(t, 4, testHeap.Extract().(int))
 	assert.Equal(t, nil, testHeap.Extract())
 }
 
 func TestHeapPushSingleElem(t *testing.T) {
-	testHeap := heap.NewMaxHeap(nil, heap.IntCompFunc)
+	testHeap := heap.NewMaxHeap(nil, lib.IntCompFunc)
 	testHeap.Insert(4)
 	assert.Equal(t, 4, testHeap.Extract().(int))
 	assert.Equal(t, nil, testHeap.Extract())
 }
 
 func TestHeapPushLargeInput(t *testing.T) {
-	numsHeap := heap.NewMinHeap(nil, heap.IntCompFunc)
+	numsHeap := heap.NewMinHeap(nil, lib.IntCompFunc)
 	// Add to heap keeping the size fixed at k at most
 	for i := 0; i < len(largeInput); i++ {
 		numsHeap.Insert(largeInput[i])
@@ -133,7 +135,7 @@ func TestHeapPushLargeInput(t *testing.T) {
 
 func TestKthLargest(t *testing.T) {
 	nums := largeInput
-	numsHeap := heap.NewMinHeap(nil, heap.IntCompFunc)
+	numsHeap := heap.NewMinHeap(nil, lib.IntCompFunc)
 	k := 918
 	// Add to heap keeping the size fixed at k at most
 	for i := 0; i < len(nums); i++ {

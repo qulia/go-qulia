@@ -1,6 +1,7 @@
 package heap
 
 import (
+	"github.com/qulia/go-qulia/lib"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,11 +19,6 @@ type Interface interface {
 	IsEmpty() bool
 }
 
-// CompareFunc definition used to decide heap configuration;
-// function takes two elements and returns positive value if first > second,
-// negative value if first < second, 0 otherwise
-type CompareFunc func(first, second interface{}) int
-
 // MinHeap is heap structure with min element is top
 type MinHeap struct {
 }
@@ -34,13 +30,13 @@ type MinHeap struct {
 
 // compareToFunc: function that takes two entries and returns positive value if first > second,
 // negative value if first < second, 0 otherwise
-func NewMinHeap(input []interface{}, compareToFunc CompareFunc) Interface {
-	if compareToFunc == nil {
-		log.Fatal("Nil compareToFunc param")
+func NewMinHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
+	if orderFunc == nil {
+		log.Fatal("Nil orderFunc param")
 	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)
-	return initHeap(buffer, compareToFunc, false)
+	return initHeap(buffer, orderFunc, false)
 }
 
 // MinHeap is heap structure with max element is top
@@ -54,24 +50,24 @@ type MaxHeap struct {
 //
 // compareToFunc: function that takes two entries and returns positive value if first > second,
 // negative value if first < second, 0 otherwise
-func NewMaxHeap(input []interface{}, compareToFunc CompareFunc) Interface {
-	if compareToFunc == nil {
-		log.Fatal("Nil compareToFunc param")
+func NewMaxHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
+	if orderFunc == nil {
+		log.Fatal("Nil orderFunc param")
 	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)
-	return initHeap(buffer, compareToFunc, true)
+	return initHeap(buffer, orderFunc, true)
 }
 
 // 0 based heap structure, parent (n -1)/2; children 2n + 1, 2n + 2
 type heap struct {
-	maxOnTop    bool
-	buffer      []interface{}
-	compareFunc CompareFunc
+	maxOnTop  bool
+	buffer    []interface{}
+	orderFunc lib.OrderFunc
 }
 
-func initHeap(buffer []interface{}, compareToFunc CompareFunc, maxOnTop bool) Interface {
-	h := heap{buffer: buffer, compareFunc: compareToFunc, maxOnTop: maxOnTop}
+func initHeap(buffer []interface{}, orderFunc lib.OrderFunc, maxOnTop bool) Interface {
+	h := heap{buffer: buffer, orderFunc: orderFunc, maxOnTop: maxOnTop}
 	h.heapify()
 	return &h
 }
@@ -168,7 +164,7 @@ func (h *heap) findTop(first int, second int) (int, bool) {
 		multiplier = -1
 	}
 
-	comp := h.compareFunc(h.buffer[first], h.buffer[second]) * multiplier
+	comp := h.orderFunc(h.buffer[first], h.buffer[second]) * multiplier
 	if comp > 0 {
 		top = first
 	} else if comp < 0 {

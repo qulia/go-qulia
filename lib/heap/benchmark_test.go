@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/qulia/go-qulia/lib"
+
 	"github.com/qulia/go-qulia/lib/heap"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -59,7 +61,7 @@ func BenchmarkHeapBasic(b *testing.B) {
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
-		h := heap.NewMaxHeap(genInputInterface, heap.IntCompFunc)
+		h := heap.NewMaxHeap(genInputInterface, lib.IntCompFunc)
 		b.StopTimer()
 		checkHeap(b, genInput, h)
 		b.StartTimer()
@@ -73,7 +75,7 @@ func BenchmarkHeapPush(b *testing.B) {
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
-		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
+		h := heap.NewMaxHeap(nil, lib.IntCompFunc)
 		for _, elem := range genInput {
 			h.Insert(elem)
 		}
@@ -104,7 +106,7 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 
 	b.ResetTimer()
 	b.Run("go-qulia/lib/heap", func(b *testing.B) {
-		h := heap.NewMaxHeap(nil, heap.IntCompFunc)
+		h := heap.NewMaxHeap(nil, lib.IntCompFunc)
 		for _, elem := range genInput {
 			h.Insert(elem)
 		}
