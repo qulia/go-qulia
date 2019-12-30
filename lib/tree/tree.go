@@ -15,13 +15,13 @@ func NewNode(data interface{}) *Node {
 }
 
 // in-order visit of node
-func Visit(node *Node, call func(interface{})) {
+func VisitInOrder(node *Node, call func(interface{})) {
 	if node == nil {
 		call(nil)
 		return
 	}
 
-	Visit(node.Left, call)
+	VisitInOrder(node.Left, call)
 	call(node.Data)
-	Visit(node.Right, call)
+	VisitInOrder(node.Right, call)
 }

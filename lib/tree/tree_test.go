@@ -17,7 +17,7 @@ func TestTreeBasic(t *testing.T) {
 	root.Right.Right = tree.NewNode(8)
 
 	var result []string
-	tree.Visit(root, func(elem interface{}) {
+	tree.VisitInOrder(root, func(elem interface{}) {
 		var elemString string
 		if elem == nil {
 			elemString = "nil"
