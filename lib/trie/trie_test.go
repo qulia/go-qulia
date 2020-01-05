@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/qulia/go-qulia/lib"
+
 	"github.com/qulia/go-qulia/lib/trie"
 	"github.com/stretchr/testify/assert"
 )

@@ -1,6 +1,8 @@
 package graph
 
-import "github.com/qulia/go-qulia/lib"
+import (
+	"github.com/qulia/go-qulia/lib"
+)
 
 type Interface interface {
 	// GetNodes returns map of all nodes in the graph
