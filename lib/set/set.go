@@ -43,7 +43,7 @@ type Interface interface {
 // Set is implementation of set.Interface
 // Comparisons to match elements are based on KeyFunc
 type Set struct {
-	entries map[int]interface{}
+	entries map[string]interface{}
 	keyFunc lib.KeyFunc
 }
 
@@ -79,7 +79,7 @@ func (s *Set) Intersection(other Interface) Interface {
 	for key, elem := range small.entries {
 		if keyOther, ok := large.contains(elem); ok {
 			if key != keyOther {
-				log.Warnf("keys do not match for %v %d %d", elem, key, keyOther)
+				log.Warnf("keys do not match for %v %s %s", elem, key, keyOther)
 			}
 			intersectionSet.Add(elem)
 		}
@@ -101,7 +101,7 @@ func (s *Set) Contains(elem interface{}) bool {
 	return ok
 }
 
-func (s *Set) contains(elem interface{}) (int, bool) {
+func (s *Set) contains(elem interface{}) (string, bool) {
 	key := s.keyFunc(elem)
 	_, ok := s.entries[key]
 	return key, ok
@@ -118,7 +118,7 @@ func (s *Set) ToSlice() []interface{} {
 
 func NewSet(keyFunc lib.KeyFunc) *Set {
 	set := Set{
-		entries: make(map[int]interface{}),
+		entries: make(map[string]interface{}),
 		keyFunc: keyFunc,
 	}
 

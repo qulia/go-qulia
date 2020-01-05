@@ -53,8 +53,7 @@ func (a *Assertions) Containsf(s interface{}, contains interface{}, msg string, 
 	return Containsf(a.t, s, contains, msg, args...)
 }
 
-// DirExists checks whether a directory exists in the given path. It also fails
-// if the path is a file rather a directory or there is an error checking whether it exists.
+// DirExists checks whether a directory exists in the given path. It also fails if the path is a file rather a directory or there is an error checking whether it exists.
 func (a *Assertions) DirExists(path string, msgAndArgs ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -62,8 +61,7 @@ func (a *Assertions) DirExists(path string, msgAndArgs ...interface{}) bool {
 	return DirExists(a.t, path, msgAndArgs...)
 }
 
-// DirExistsf checks whether a directory exists in the given path. It also fails
-// if the path is a file rather a directory or there is an error checking whether it exists.
+// DirExistsf checks whether a directory exists in the given path. It also fails if the path is a file rather a directory or there is an error checking whether it exists.
 func (a *Assertions) DirExistsf(path string, msg string, args ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -311,8 +309,7 @@ func (a *Assertions) Falsef(value bool, msg string, args ...interface{}) bool {
 	return Falsef(a.t, value, msg, args...)
 }
 
-// FileExists checks whether a file exists in the given path. It also fails if
-// the path points to a directory or there is an error when trying to check the file.
+// FileExists checks whether a file exists in the given path. It also fails if the path points to a directory or there is an error when trying to check the file.
 func (a *Assertions) FileExists(path string, msgAndArgs ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -320,8 +317,7 @@ func (a *Assertions) FileExists(path string, msgAndArgs ...interface{}) bool {
 	return FileExists(a.t, path, msgAndArgs...)
 }
 
-// FileExistsf checks whether a file exists in the given path. It also fails if
-// the path points to a directory or there is an error when trying to check the file.
+// FileExistsf checks whether a file exists in the given path. It also fails if the path points to a directory or there is an error when trying to check the file.
 func (a *Assertions) FileExistsf(path string, msg string, args ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -525,7 +521,7 @@ func (a *Assertions) Implementsf(interfaceObject interface{}, object interface{}
 
 // InDelta asserts that the two numerals are within delta of each other.
 //
-// 	 a.InDelta(math.Pi, 22/7.0, 0.01)
+// 	 a.InDelta(math.Pi, (22 / 7.0), 0.01)
 func (a *Assertions) InDelta(expected interface{}, actual interface{}, delta float64, msgAndArgs ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -567,7 +563,7 @@ func (a *Assertions) InDeltaSlicef(expected interface{}, actual interface{}, del
 
 // InDeltaf asserts that the two numerals are within delta of each other.
 //
-// 	 a.InDeltaf(math.Pi, 22/7.0, 0.01, "error message %s", "formatted")
+// 	 a.InDeltaf(math.Pi, (22 / 7.0, "error message %s", "formatted"), 0.01)
 func (a *Assertions) InDeltaf(expected interface{}, actual interface{}, delta float64, msg string, args ...interface{}) bool {
 	if h, ok := a.t.(tHelper); ok {
 		h.Helper()
@@ -641,6 +637,22 @@ func (a *Assertions) JSONEqf(expected string, actual string, msg string, args ..
 		h.Helper()
 	}
 	return JSONEqf(a.t, expected, actual, msg, args...)
+}
+
+// YAMLEq asserts that two YAML strings are equivalent.
+func (a *Assertions) YAMLEq(expected string, actual string, msgAndArgs ...interface{}) bool {
+	if h, ok := a.t.(tHelper); ok {
+		h.Helper()
+	}
+	return YAMLEq(a.t, expected, actual, msgAndArgs...)
+}
+
+// YAMLEqf asserts that two YAML strings are equivalent.
+func (a *Assertions) YAMLEqf(expected string, actual string, msg string, args ...interface{}) bool {
+	if h, ok := a.t.(tHelper); ok {
+		h.Helper()
+	}
+	return YAMLEqf(a.t, expected, actual, msg, args...)
 }
 
 // Len asserts that the specified object has specific length.
@@ -735,24 +747,6 @@ func (a *Assertions) Nilf(object interface{}, msg string, args ...interface{}) b
 	return Nilf(a.t, object, msg, args...)
 }
 
-// NoDirExists checks whether a directory does not exist in the given path.
-// It fails if the path points to an existing _directory_ only.
-func (a *Assertions) NoDirExists(path string, msgAndArgs ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NoDirExists(a.t, path, msgAndArgs...)
-}
-
-// NoDirExistsf checks whether a directory does not exist in the given path.
-// It fails if the path points to an existing _directory_ only.
-func (a *Assertions) NoDirExistsf(path string, msg string, args ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NoDirExistsf(a.t, path, msg, args...)
-}
-
 // NoError asserts that a function returned no error (i.e. `nil`).
 //
 //   actualObj, err := SomeFunction()
@@ -777,24 +771,6 @@ func (a *Assertions) NoErrorf(err error, msg string, args ...interface{}) bool {
 		h.Helper()
 	}
 	return NoErrorf(a.t, err, msg, args...)
-}
-
-// NoFileExists checks whether a file does not exist in a given path. It fails
-// if the path points to an existing _file_ only.
-func (a *Assertions) NoFileExists(path string, msgAndArgs ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NoFileExists(a.t, path, msgAndArgs...)
-}
-
-// NoFileExistsf checks whether a file does not exist in a given path. It fails
-// if the path points to an existing _file_ only.
-func (a *Assertions) NoFileExistsf(path string, msg string, args ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NoFileExistsf(a.t, path, msg, args...)
 }
 
 // NotContains asserts that the specified string, list(array, slice...) or map does NOT contain the
@@ -937,32 +913,6 @@ func (a *Assertions) NotRegexpf(rx interface{}, str interface{}, msg string, arg
 	return NotRegexpf(a.t, rx, str, msg, args...)
 }
 
-// NotSame asserts that two pointers do not reference the same object.
-//
-//    a.NotSame(ptr1, ptr2)
-//
-// Both arguments must be pointer variables. Pointer variable sameness is
-// determined based on the equality of both type and value.
-func (a *Assertions) NotSame(expected interface{}, actual interface{}, msgAndArgs ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NotSame(a.t, expected, actual, msgAndArgs...)
-}
-
-// NotSamef asserts that two pointers do not reference the same object.
-//
-//    a.NotSamef(ptr1, ptr2, "error message %s", "formatted")
-//
-// Both arguments must be pointer variables. Pointer variable sameness is
-// determined based on the equality of both type and value.
-func (a *Assertions) NotSamef(expected interface{}, actual interface{}, msg string, args ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return NotSamef(a.t, expected, actual, msg, args...)
-}
-
 // NotSubset asserts that the specified list(array, slice...) contains not all
 // elements given in the specified subset(array, slice...).
 //
@@ -1009,30 +959,6 @@ func (a *Assertions) Panics(f PanicTestFunc, msgAndArgs ...interface{}) bool {
 		h.Helper()
 	}
 	return Panics(a.t, f, msgAndArgs...)
-}
-
-// PanicsWithError asserts that the code inside the specified PanicTestFunc
-// panics, and that the recovered panic value is an error that satisfies the
-// EqualError comparison.
-//
-//   a.PanicsWithError("crazy error", func(){ GoCrazy() })
-func (a *Assertions) PanicsWithError(errString string, f PanicTestFunc, msgAndArgs ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return PanicsWithError(a.t, errString, f, msgAndArgs...)
-}
-
-// PanicsWithErrorf asserts that the code inside the specified PanicTestFunc
-// panics, and that the recovered panic value is an error that satisfies the
-// EqualError comparison.
-//
-//   a.PanicsWithErrorf("crazy error", func(){ GoCrazy() }, "error message %s", "formatted")
-func (a *Assertions) PanicsWithErrorf(errString string, f PanicTestFunc, msg string, args ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return PanicsWithErrorf(a.t, errString, f, msg, args...)
 }
 
 // PanicsWithValue asserts that the code inside the specified PanicTestFunc panics, and that
@@ -1175,22 +1101,6 @@ func (a *Assertions) WithinDurationf(expected time.Time, actual time.Time, delta
 		h.Helper()
 	}
 	return WithinDurationf(a.t, expected, actual, delta, msg, args...)
-}
-
-// YAMLEq asserts that two YAML strings are equivalent.
-func (a *Assertions) YAMLEq(expected string, actual string, msgAndArgs ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return YAMLEq(a.t, expected, actual, msgAndArgs...)
-}
-
-// YAMLEqf asserts that two YAML strings are equivalent.
-func (a *Assertions) YAMLEqf(expected string, actual string, msg string, args ...interface{}) bool {
-	if h, ok := a.t.(tHelper); ok {
-		h.Helper()
-	}
-	return YAMLEqf(a.t, expected, actual, msg, args...)
 }
 
 // Zero asserts that i is the zero value for its type.

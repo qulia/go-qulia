@@ -1,5 +1,11 @@
 package lib
 
+import (
+	"strconv"
+
+	"github.com/qulia/go-qulia/lib/hash"
+)
+
 // Metadata to append properties,tags to Graph, Node, Edge, etc
 type Metadata map[string]interface{}
 
@@ -8,7 +14,7 @@ type Metadata map[string]interface{}
 // negative value if first < second, 0 otherwise
 type OrderFunc func(first, second interface{}) int
 
-type KeyFunc func(interface{}) int
+type KeyFunc func(interface{}) string
 
 var (
 	IntCompFunc = func(first, second interface{}) int {
@@ -23,7 +29,11 @@ var (
 		}
 	}
 
-	IntKeyFunc = func(elem interface{}) int {
-		return elem.(int)
+	IntKeyFunc = func(elem interface{}) string {
+		return strconv.Itoa(elem.(int))
+	}
+
+	HashKeyFunc = func(elem interface{}) string {
+		return hash.Sha1(elem)
 	}
 )
