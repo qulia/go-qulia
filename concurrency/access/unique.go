@@ -23,6 +23,8 @@ func (u *Unique) Release() {
 }
 
 func (u *Unique) Done() {
+	// Wait for the current user to be done before pushing nil
+	u.Acquire()
 	u.obj = nil
 	u.Release()
 }
