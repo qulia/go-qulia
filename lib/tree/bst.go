@@ -19,6 +19,12 @@ type BSTInterface interface {
 
 	// In-order traversal of tree, calling the func for each element visited
 	Traverse(func(interface{}))
+
+	// Returns the largest value node that is smaller than or equal to the given value.
+	Floor(interface{}) *Node
+
+	// Returns the smallest value node that is larger than or equal to the given value.
+	Ceiling(interface{}) *Node
 }
 
 type BST struct {
@@ -85,4 +91,57 @@ func (bst *BST) insert(root **Node, elem interface{}) *Node {
 	}
 
 	return *root
+}
+
+func (bst *BST) Floor(elem interface{}) *Node {
+	return bst.floor(elem, bst.root)
+}
+
+func (bst *BST) floor(elem interface{}, root *Node) *Node {
+	// if we reach to the leaf and value does not match, not found
+	if root == nil {
+		return nil
+	}
+	comp := bst.orderFunc(root.Data, elem)
+	if comp == 0 {
+		return root
+	} else if comp > 0 {
+		// root is larger, search left
+		return bst.floor(elem, root.Left)
+	} else {
+		// root is smaller, but there could be something larger on right
+		right := bst.floor(elem, root.Right)
+		if right == nil {
+			return root
+		} else {
+			return right
+		}
+	}
+}
+
+func (bst *BST) Ceiling(elem interface{}) *Node {
+	return bst.ceiling(elem, bst.root)
+}
+
+func (bst *BST) ceiling(elem interface{}, root *Node) *Node {
+	// if we reach to the leaf and value does not match, not found
+	if root == nil {
+		return nil
+	}
+
+	comp := bst.orderFunc(root.Data, elem)
+	if comp == 0 {
+		return root
+	} else if comp < 0 {
+		// root is smaller, search right
+		return bst.ceiling(elem, root.Right)
+	} else {
+		// root is larger but there could be something smaller on the left
+		left := bst.ceiling(elem, root.Left)
+		if left == nil {
+			return root
+		} else {
+			return left
+		}
+	}
 }

@@ -41,3 +41,30 @@ func TestBSTEmpty(t *testing.T) {
 	assert.Nil(t, bst.Search(2))
 	assert.Nil(t, bst.Search(nil))
 }
+
+func TestBST_Floor(t *testing.T) {
+	nums := []int{0, 1, 5, 9, 1, 2, 3}
+	bst := tree.NewBST(lib.IntCompFunc)
+	for _, val := range nums {
+		bst.Insert(val)
+	}
+
+	assert.Equal(t, 1, bst.Floor(1).Data)
+	assert.Equal(t, 3, bst.Floor(3).Data)
+	assert.Equal(t, 5, bst.Floor(6).Data)
+	assert.Nil(t, bst.Floor(-1))
+}
+
+func TestBST_Ceiling(t *testing.T) {
+	nums := []int{0, 1, 5, 9, 1, 2, 3}
+	bst := tree.NewBST(lib.IntCompFunc)
+	for _, val := range nums {
+		bst.Insert(val)
+	}
+
+	assert.Equal(t, 1, bst.Ceiling(1).Data)
+	assert.Equal(t, 3, bst.Ceiling(3).Data)
+	assert.Equal(t, 5, bst.Ceiling(4).Data)
+	assert.Equal(t, 9, bst.Ceiling(6).Data)
+	assert.Nil(t, bst.Ceiling(10))
+}
