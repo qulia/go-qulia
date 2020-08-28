@@ -24,7 +24,7 @@ func TestTrieBasic(t *testing.T) {
 	checkPrefix(t, testTrie, "hijklm", []string{"hijklm"})
 }
 
-func checkPrefix(t *testing.T, testTrie trie.Interface, prefix string, expectedWords []string) {
+func checkPrefix(t *testing.T, testTrie trie.TrieInterface, prefix string, expectedWords []string) {
 	mData, ok := testTrie.Search([]rune(prefix))
 	assert.True(t, ok)
 	wordsWithPrefix := mData["words"].([]string)
