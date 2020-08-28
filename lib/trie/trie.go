@@ -13,7 +13,7 @@ const (
 
 type UpdateMDataFunc func(char rune, word []rune, metadata lib.Metadata)
 
-type Interface interface {
+type TrieInterface interface {
 	// Inserts a word into trie
 	Insert(word []rune)
 

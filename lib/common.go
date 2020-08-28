@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"math"
 	"strconv"
 
 	"github.com/qulia/go-qulia/lib/hash"
@@ -37,3 +38,40 @@ var (
 		return hash.Sha1(elem)
 	}
 )
+
+type QueryEvalFunc func(a, b interface{}) interface{}
+type UpdateFunc func(current interface{}) interface{}
+type DisjointValFunc func() interface{}
+
+func IntQueryEvalMinFunc(a, b interface{}) interface{} {
+	var aInt, bInt int
+	if a == nil {
+		aInt = math.MaxInt32
+	} else {
+		aInt = a.(int)
+	}
+	if b == nil {
+		bInt = math.MaxInt32
+	} else {
+		bInt = b.(int)
+	}
+	if aInt < bInt {
+		return aInt
+	}
+	return bInt
+}
+
+func IntQueryEvalSumFunc(a, b interface{}) interface{} {
+	var aInt, bInt int
+	if a == nil {
+		aInt = 0
+	} else {
+		aInt = a.(int)
+	}
+	if b == nil {
+		bInt = 0
+	} else {
+		bInt = b.(int)
+	}
+	return aInt + bInt
+}
