@@ -1,13 +1,13 @@
 package heap_test
 
 import (
+	"log"
 	"sort"
 	"testing"
 
 	"github.com/qulia/go-qulia/lib"
 
 	"github.com/qulia/go-qulia/lib/heap"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -146,6 +146,6 @@ func TestKthLargest(t *testing.T) {
 	}
 
 	result := numsHeap.Extract().(int)
-	log.Infof("Result: %d", result)
+	log.Printf("Result: %d", result)
 	assert.Equal(t, 8221, result)
 }

@@ -1,13 +1,13 @@
 package access_test
 
 import (
+	"log"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/qulia/go-qulia/concurrency/access"
 	"github.com/qulia/go-qulia/lib/queue"
-	log "github.com/sirupsen/logrus"
 )
 
 type job struct {
@@ -21,6 +21,7 @@ func TestUniqueBasic(t *testing.T) {
 
 	// Run consumer
 	go func() {
+		defer log.Printf("Exiting consumer")
 		for {
 			// Acquire the job queue before consuming
 			jobQueue := jobQueueUnique.Acquire()
@@ -30,12 +31,10 @@ func TestUniqueBasic(t *testing.T) {
 			}
 
 			job := jobQueue.(*queue.Queue).Dequeue()
-			log.Infof("Processing job %v", job)
+			log.Printf("Processing job %v", job)
 			jobQueueUnique.Release()
-			log.Infof("Done processing job %v", job)
+			log.Printf("Done processing job %v", job)
 		}
-
-		log.Infof("Exiting consumer")
 	}()
 
 	go func() {
@@ -45,14 +44,14 @@ func TestUniqueBasic(t *testing.T) {
 				id:   i,
 				name: "job" + strconv.Itoa(i),
 			}
-			log.Infof("Queuing job %v", job)
+			log.Printf("Queuing job %v", job)
 			jobQueue.(*queue.Queue).Enqueue(job)
 			jobQueueUnique.Release()
 		}
 
-		log.Infof("Done queuing jobs")
+		log.Printf("Done queuing jobs")
 		jobQueueUnique.Done()
-		log.Infof("Exiting producer")
+		log.Printf("Exiting producer")
 	}()
 
 	jobQueueUnique.Release()
