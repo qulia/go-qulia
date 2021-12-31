@@ -2,7 +2,6 @@ package heap
 
 import (
 	"github.com/qulia/go-qulia/lib"
-	log "github.com/sirupsen/logrus"
 )
 
 type Interface interface {
@@ -32,7 +31,7 @@ type MinHeap struct {
 // negative value if first < second, 0 otherwise
 func NewMinHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
 	if orderFunc == nil {
-		log.Fatal("Nil orderFunc param")
+		panic("Nil orderFunc param")
 	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)
@@ -52,7 +51,7 @@ type MaxHeap struct {
 // negative value if first < second, 0 otherwise
 func NewMaxHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
 	if orderFunc == nil {
-		log.Fatal("Nil orderFunc param")
+		panic("Nil orderFunc param")
 	}
 	buffer := make([]interface{}, len(input))
 	copy(buffer, input)

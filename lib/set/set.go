@@ -2,7 +2,6 @@ package set
 
 import (
 	"github.com/qulia/go-qulia/lib"
-	log "github.com/sirupsen/logrus"
 )
 
 type Interface interface {
@@ -76,11 +75,8 @@ func (s *Set) Intersection(other Interface) Interface {
 	}
 
 	intersectionSet := NewSet(s.keyFunc)
-	for key, elem := range small.entries {
-		if keyOther, ok := large.contains(elem); ok {
-			if key != keyOther {
-				log.Warnf("keys do not match for %v %s %s", elem, key, keyOther)
-			}
+	for _, elem := range small.entries {
+		if _, ok := large.contains(elem); ok {
 			intersectionSet.Add(elem)
 		}
 	}
