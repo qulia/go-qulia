@@ -1,6 +1,7 @@
 package heap_test
 
 import (
+	"log"
 	"math/rand"
 	"sort"
 	"testing"
@@ -9,7 +10,6 @@ import (
 	"github.com/qulia/go-qulia/lib"
 
 	"github.com/qulia/go-qulia/lib/heap"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	contheap "container/heap"
@@ -57,7 +57,7 @@ func BenchmarkHeapBasic(b *testing.B) {
 	for _, elem := range genInput {
 		genInputInterface = append(genInputInterface, elem)
 	}
-	log.Infof("Size %d", len(genInputInterface))
+	log.Printf("Size %d", len(genInputInterface))
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
@@ -71,7 +71,7 @@ func BenchmarkHeapBasic(b *testing.B) {
 func BenchmarkHeapPush(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 
-	log.Infof("Size %d", len(genInput))
+	log.Printf("Size %d", len(genInput))
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
@@ -88,7 +88,7 @@ func BenchmarkHeapPush(b *testing.B) {
 func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 
-	log.Infof("Size %d", len(genInput))
+	log.Printf("Size %d", len(genInput))
 
 	b.ResetTimer()
 	b.Run("container/heap", func(b *testing.B) {
