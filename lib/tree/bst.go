@@ -2,7 +2,6 @@ package tree
 
 import (
 	"github.com/qulia/go-qulia/lib"
-	log "github.com/sirupsen/logrus"
 )
 
 // Binary Search Tree implementation https://en.wikipedia.org/wiki/Binary_search_tree
@@ -34,7 +33,7 @@ type BST struct {
 
 func NewBST(orderFunc lib.OrderFunc) *BST {
 	if orderFunc == nil {
-		log.Fatal("Nil orderFunc param")
+		panic("Nil orderFunc param")
 	}
 	bst := BST{orderFunc: orderFunc}
 	return &bst
