@@ -1,6 +1,9 @@
 package graph
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/qulia/go-qulia/lib"
 )
 
@@ -107,5 +110,30 @@ func (g *Graph) addEdge(from, to *Node) {
 
 		g.Nodes[from.Name].EdgesOut[to.Name] = v
 		g.Nodes[to.Name].EdgesIn[from.Name] = v
+	}
+}
+
+// Return Dot string of the graph, can be used with Graphviz(https://graphviz.org/) to visualize
+func (g *Graph) Dot() string {
+	sb := strings.Builder{}
+
+	sb.WriteString(`strict digraph {`)
+	sb.WriteString("\n")
+
+	nodes := g.GetNodes()
+	for _, n := range nodes {
+		n.WriteDot(&sb)
+	}
+
+	sb.WriteString(`}`)
+
+	return sb.String()
+}
+
+func (n *Node) WriteDot(sb *strings.Builder) {
+	sb.WriteString(n.Name)
+	sb.WriteString("\n")
+	for target := range n.EdgesOut {
+		sb.WriteString(fmt.Sprintf("%s -> %s\n", n.Name, target))
 	}
 }
