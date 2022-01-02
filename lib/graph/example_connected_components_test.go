@@ -50,6 +50,11 @@ func ExampleGraph_connected_components() {
 		}
 	}
 
+	if generateViz {
+		// Generage graph
+		dotToImageGraphviz("ExampleGraph_connected_components", "svg", []byte(cityGraph.Dot()))
+	}
+
 	// Now find connected groups of cities
 	var connected [][]city
 	for _, node := range cityGraph.Nodes {
