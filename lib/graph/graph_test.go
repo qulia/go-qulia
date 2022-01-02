@@ -22,4 +22,9 @@ func TestGraphBasic(t *testing.T) {
 	assert.NotNil(t, testGraph.Nodes["node4"].EdgesIn["node5"])
 	assert.NotNil(t, testGraph.Nodes["node5"].EdgesOut["node4"])
 	assert.NotNil(t, testGraph.Nodes["node5"].EdgesIn["node4"])
+
+	if generateViz {
+		// Generage graph
+		dotToImageGraphviz("TestGraphBasic", "svg", []byte(testGraph.Dot()))
+	}
 }
