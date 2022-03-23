@@ -2,7 +2,8 @@ package unionfind
 
 // Ref: https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 type UnionFind struct {
-	m map[int]*node
+	m     map[int]*node
+	count int
 }
 
 type node struct {
@@ -21,11 +22,17 @@ func New(arr []int) *UnionFind {
 	return unif
 }
 
+// Number of groups
+func (unif UnionFind) Count() int {
+	return unif.count
+}
+
 func (unif *UnionFind) Find(v int) int {
 	n := unif.m[v]
 	if n == nil {
 		unif.m[v] = &node{v, 0, v, 1}
 		n = unif.m[v]
+		unif.count++
 	}
 	if n.parent != n.val {
 		// Not root
@@ -56,6 +63,7 @@ func (unif *UnionFind) Union(x, y int) {
 	}
 
 	xRoot.size += yRoot.size
+	unif.count--
 }
 
 func (unif *UnionFind) Size(x int) int {
