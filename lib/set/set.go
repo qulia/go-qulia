@@ -4,79 +4,115 @@ import (
 	"github.com/qulia/go-qulia/lib"
 )
 
-type Interface interface {
+type Interface[T lib.Keyable[K], K comparable] interface {
 	// Add element to the set
-	Add(interface{})
+	Add(T)
 
 	//Remove element from the set
-	Remove(interface{})
+	Remove(T)
 
 	// CopyTo another set
-	CopyTo(other Interface)
+	CopyTo(other Interface[T, K])
 
 	// Returns the union set with other set
-	Union(other Interface) Interface
+	Union(other Interface[T, K]) Interface[T, K]
 
 	// Returns the intersection set with other set
-	Intersection(other Interface) Interface
+	Intersection(other Interface[T, K]) Interface[T, K]
 
 	// Is current set subset (contained in) of the provided set
-	IsSubsetOf(other Interface) bool
+	IsSubsetOf(other Interface[T, K]) bool
 
 	// Is current set superset of the provided set
-	IsSupersetOf(other Interface) bool
+	IsSupersetOf(other Interface[T, K]) bool
 
 	// Returns true if set contains the element, -1, false otherwise
-	Contains(interface{}) bool
+	Contains(T) bool
 
 	// Size of the set
-	Size() int
+	Len() int
 
 	// Creates a slice from the set
-	ToSlice() []interface{}
+	ToSlice() []T
 
 	// Initializes the set from slice
-	FromSlice([]interface{})
+	FromSlice([]T)
+
+	// Create a slice of keys 
+	Keys() []K
 }
 
 // Set is implementation of set.Interface
-// Comparisons to match elements are based on KeyFunc
-type Set struct {
-	entries map[string]interface{}
-	keyFunc lib.KeyFunc
+type KeyedSet[T lib.Keyable[K], K comparable] struct {
+	entries map[K]T
 }
 
-func (s *Set) FromSlice(input []interface{}) {
+type Set[T comparable] struct {
+	KeyedSet[lib.DefaultKeyable[T], T]
+}
+
+func NewKeyedSet[T lib.Keyable[K], K comparable]() *KeyedSet[T, K] {
+	set := KeyedSet[T,K]{
+		entries: make(map[K]T),
+	}
+
+	return &set
+}
+
+func NewSet[T comparable]() *Set[T] {
+	set := Set[T]{}
+	set.entries = make(map[T]lib.DefaultKeyable[T])
+	return &set
+}
+
+func (s *Set[T]) AddKey(elem T) {
+	s.Add(lib.DefaultKeyable[T]{Val:elem})
+} 
+
+func (s *Set[T]) FromKeys(input []T) {
 	for _, elem := range input {
-		s.Add(elem)
+		s.AddKey(elem)
 	}
 }
 
-func (s *Set) Union(other Interface) Interface {
-	unionSet := NewSet(s.keyFunc)
+func (s *KeyedSet[T, K]) Len() int {
+	return len(s.entries)
+}
+
+func (s *KeyedSet[T, K]) Add(elem T) {
+	s.entries[elem.Key()] = elem
+}
+
+func (s *KeyedSet[T, K]) Remove(elem T) {
+	s.RemoveKey(elem.Key())
+}
+
+func (s *KeyedSet[T, K]) RemoveKey(key K) {
+	delete(s.entries, key)
+}
+
+func (s *KeyedSet[T, K]) Contains(elem T) bool {
+	_, ok := s.entries[elem.Key()]
+	return ok
+}
+
+func (s *KeyedSet[T, K]) ContainsKey(key K) bool {
+	_, ok := s.entries[key]
+	return ok
+}
+
+func (s *KeyedSet[T, K]) Union(other Interface[T, K]) Interface[T, K] {
+	unionSet := NewKeyedSet[T,K]()
 	s.CopyTo(unionSet)
 	other.CopyTo(unionSet)
 
 	return unionSet
 }
 
-func (s *Set) Intersection(other Interface) Interface {
-	lenS := s.Size()
-	lenOther := other.Size()
-
-	var small *Set
-	var large *Set
-	if lenS < lenOther {
-		small = s
-		large = other.(*Set)
-	} else {
-		small = other.(*Set)
-		large = s
-	}
-
-	intersectionSet := NewSet(s.keyFunc)
-	for _, elem := range small.entries {
-		if _, ok := large.contains(elem); ok {
+func (s *KeyedSet[T, K]) Intersection(other Interface[T, K]) Interface[T, K] {
+	intersectionSet := NewKeyedSet[T, K]()
+	for _, elem := range s.entries {
+		if other.Contains(elem) {
 			intersectionSet.Add(elem)
 		}
 	}
@@ -84,27 +120,31 @@ func (s *Set) Intersection(other Interface) Interface {
 	return intersectionSet
 }
 
-func (s *Set) IsSubsetOf(other Interface) bool {
-	return s.Intersection(other).Size() == s.Size()
+func (s *KeyedSet[T, K]) IsSubsetOf(other Interface[T, K]) bool {
+	return s.Intersection(other).Len() == s.Len()
 }
 
-func (s *Set) IsSupersetOf(other Interface) bool {
+func (s *KeyedSet[T, K]) IsSupersetOf(other Interface[T, K]) bool {
 	return other.IsSubsetOf(s)
 }
 
-func (s *Set) Contains(elem interface{}) bool {
-	_, ok := s.contains(elem)
-	return ok
+func (s *KeyedSet[T, K]) Keys() []K {
+	var res []K
+	for k, _ := range s.entries {
+		res = append(res, k)
+	}
+
+	return res
 }
 
-func (s *Set) contains(elem interface{}) (string, bool) {
-	key := s.keyFunc(elem)
-	_, ok := s.entries[key]
-	return key, ok
+func (s *KeyedSet[T, K]) FromSlice(input []T) {
+	for _, elem := range input {
+		s.Add(elem)
+	}
 }
 
-func (s *Set) ToSlice() []interface{} {
-	var res []interface{}
+func (s *KeyedSet[T, K]) ToSlice() []T {
+	var res []T
 	for _, elem := range s.entries {
 		res = append(res, elem)
 	}
@@ -112,32 +152,7 @@ func (s *Set) ToSlice() []interface{} {
 	return res
 }
 
-func NewSet(keyFunc lib.KeyFunc) *Set {
-	set := Set{
-		entries: make(map[string]interface{}),
-		keyFunc: keyFunc,
-	}
-
-	return &set
-}
-
-func (s *Set) Size() int {
-	return len(s.entries)
-}
-
-func (s *Set) Add(elem interface{}) {
-	if key, ok := s.contains(elem); !ok {
-		s.entries[key] = elem
-	}
-}
-
-func (s *Set) Remove(elem interface{}) {
-	if key, ok := s.contains(elem); ok {
-		delete(s.entries, key)
-	}
-}
-
-func (s *Set) CopyTo(other Interface) {
+func (s *KeyedSet[T, K]) CopyTo(other Interface[T, K]) {
 	for _, elem := range s.entries {
 		other.Add(elem)
 	}
