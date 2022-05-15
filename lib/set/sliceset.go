@@ -2,55 +2,54 @@ package set
 
 import "github.com/qulia/go-qulia/lib"
 
-type SliceSet struct {
-	buf []interface{}
-	km  map[string]int
-	kf  lib.KeyFunc
+type SliceSet[T lib.Keyable[K], K comparable] struct {
+	buf []T  // holds items
+	km  map[K]int  // key to buf index
 }
 
-func NewSliceSet(kf lib.KeyFunc) *SliceSet {
-	ss := SliceSet{kf: kf}
-	ss.km = make(map[string]int)
-	return &ss
+func NewSliceSet[T lib.Keyable[K], K comparable] () *SliceSet[T, K] {
+	return &SliceSet[T, K]{km:map[K]int{}}
 }
 
-func (ss SliceSet) GetSlice() []interface{} {
+func (ss SliceSet[T, K]) GetSlice() []T {
 	return ss.buf
 }
 
-func (ss *SliceSet) Add(it interface{}) {
-	k := ss.kf(it)
+func (ss *SliceSet[T, K]) Add(it T) {
 	ss.Remove(it)
 	ss.buf = append(ss.buf, it)
-	ss.km[k] = len(ss.buf) - 1
+	ss.km[it.Key()] = len(ss.buf) - 1
 }
 
-func (ss *SliceSet) Remove(it interface{}) {
-	if !ss.ContainsKeyFor(it) {
+func (ss *SliceSet[T, K]) Remove(it T) {
+	ss.RemoveKey(it.Key())
+}
+
+func (ss *SliceSet[T, K]) RemoveKey(key K) {
+	if !ss.ContainsKey(key) {
 		return
 	}
-	k := ss.kf(it)
-	idx := ss.km[k]
+	idx := ss.km[key]
 	lastIdx := len(ss.buf) - 1
 	// swap
 	ss.buf[idx], ss.buf[lastIdx] = ss.buf[lastIdx], ss.buf[idx]
-	ss.km[ss.kf(ss.buf[idx])] = idx
+	ss.km[ss.buf[idx].Key()] = idx
 	ss.buf = ss.buf[:lastIdx]
-	delete(ss.km, k)
+	delete(ss.km, key)
 }
 
-func (ss SliceSet) ContainsKeyFor(it interface{}) bool {
-	k := ss.kf(it)
-	if _, ok := ss.km[k]; ok {
-		return true
-	}
-
-	return false
+func (ss SliceSet[T, K]) Contains(it T) bool {
+	return ss.ContainsKey(it.Key())
 }
 
-func (ss SliceSet) GetItemForKey(it interface{}) interface{} {
-	if !ss.ContainsKeyFor(it) {
-		return nil
+func (ss SliceSet[T, K]) ContainsKey(key K) bool {
+	_, ok := ss.km[key]
+	return ok
+}
+
+func (ss SliceSet[T, K]) GetItemWithKey(key K) (T,bool) {
+	if !ss.ContainsKey(key) {
+		return ss.buf[ss.km[key]], false
 	}
-	return ss.buf[ss.km[ss.kf(it)]]
+	return ss.buf[ss.km[key]], true
 }

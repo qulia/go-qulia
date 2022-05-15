@@ -15,7 +15,17 @@ type Metadata map[string]interface{}
 // negative value if first < second, 0 otherwise
 type OrderFunc func(first, second interface{}) int
 
-type KeyFunc func(interface{}) string
+type Keyable[K comparable] interface {
+	Key() K
+}
+
+type DefaultKeyable[T comparable] struct {
+	Val T
+}
+
+func (dk DefaultKeyable[T]) Key() T {
+	return dk.Val
+}
 
 var (
 	IntCompFunc = func(first, second interface{}) int {
