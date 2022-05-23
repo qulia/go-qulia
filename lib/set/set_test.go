@@ -10,13 +10,13 @@ import (
 
 func TestSetBasic(t *testing.T) {
 	evenNums := set.NewSet[int]()
-	evenNums.FromKeys([]int{2, 4, 6, 8})
+	evenNums.FromSlice([]int{2, 4, 6, 8})
 
 	oddNums := set.NewSet[int]()
-	oddNums.FromKeys([]int{1, 3, 5, 7, 9})
+	oddNums.FromSlice([]int{1, 3, 5, 7, 9})
 
 	primeNums := set.NewSet[int]()
-	primeNums.FromKeys([]int{2, 3, 5, 7})
+	primeNums.FromSlice([]int{2, 3, 5, 7})
 
 	nums := set.NewSet[int]()
 	nums.FromSlice(evenNums.Union(oddNums).ToSlice())
@@ -31,8 +31,8 @@ func TestSetBasic(t *testing.T) {
 
 	assert.Equal(t, evenNums.Len(), 4)
 	assert.Equal(t, oddNums.Len(), 5)
-	assert.True(t, oddNums.ContainsKey(3))
-	assert.False(t, oddNums.ContainsKey(2))
+	assert.True(t, oddNums.Contains(3))
+	assert.False(t, oddNums.Contains(2))
 	assert.Equal(t, 0, evenNums.Intersection(oddNums).Len())
 	assert.Equal(t, []int{2}, primeAndEvenNums)
 	assert.Equal(t, []int{3, 5, 7}, oddAndPrimeEvenNums)
@@ -41,41 +41,48 @@ func TestSetBasic(t *testing.T) {
 	assert.True(t, evenNums.IsSubsetOf(nums))
 	assert.True(t, nums.IsSupersetOf(oddNums))
 
-	nums.RemoveKey(2)
+	nums.Remove(2)
 	assert.False(t, evenNums.IsSubsetOf(nums))
-	nums.RemoveKey(3)
+	nums.Remove(3)
 	assert.False(t, nums.IsSupersetOf(oddNums))
 }
 
 func TestSetDuplicate(t *testing.T) {
 	nums := set.NewSet[int]()
-	nums.FromKeys([]int{8, 2, 4, 4, 6, 8})
+	nums.FromSlice([]int{8, 2, 4, 4, 6, 8})
 	assert.Equal(t, 4, nums.Len())
 }
 
 type employee struct {
-	id int
+	id            int
 	name, surname string
-	friends []int
+	friends       []int
 }
 
-type employeeKeyable struct {
-	e employee
-}
-
-func (ek employeeKeyable) Key() int{
-	return ek.e.id
+func (ek employee) Key() int {
+	return ek.id
 }
 
 func TestCustomKey(t *testing.T) {
 	emps := []employee{{1, "n1", "sn1", nil}, {2, "n2", "sn2", []int{1}}, {3, "n1", "sn1", nil}}
-	s := set.NewKeyedSet[employeeKeyable, int]()
+	s := set.NewCustomKeySet[employee, int]()
 	for _, e := range emps {
-		s.Add(employeeKeyable{e})
+		s.Add(e)
 	}
 
 	eids := s.Keys()
 	sort.Ints(eids)
 	assert.Equal(t, 3, s.Len())
 	assert.Equal(t, []int{1, 2, 3}, eids)
+
+	emps2 := []employee{{1, "n1", "sn1", nil}, {3, "n1", "sn1", nil}}
+	s2 := set.NewCustomKeySet[employee, int]()
+	s2.FromSlice(emps2)
+	assert.True(t, s2.IsSubsetOf(s))
+	assert.False(t, s2.IsSupersetOf(s))
+	assert.Equal(t, 3, s2.Union(s).Len())
+	assert.Equal(t, 2, s2.Intersection(s).Len())
+
+	s3 := set.NewCustomKeySet[employee, int]()
+	assert.True(t, s3.FromSlice(s.ToSlice()).Union(s).IsSubsetOf(s))
 }
