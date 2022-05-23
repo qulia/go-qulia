@@ -2,14 +2,18 @@ package heap
 
 import (
 	"github.com/qulia/go-qulia/lib"
+	"golang.org/x/exp/constraints"
 )
 
-type Interface interface {
+// Heap content type satisfy constraints.Ordered
+// While comparing during heap oparation "<" is used
+type Heap[T constraints.Ordered] interface {
 	// Insert element to the heap
-	Insert(interface{})
+	Insert(T)
 
 	// Extract top element from the heap
-	Extract() interface{}
+	// If heap is empty, the call will panic
+	Extract() T
 
 	// Size of the heap
 	Size() int
@@ -18,178 +22,59 @@ type Interface interface {
 	IsEmpty() bool
 }
 
-// MinHeap is heap structure with min element is top
-type MinHeap struct {
+// Heap content of any type should implement lib.Lesser interface
+type CustomCompHeap[T lib.Lesser[T]] interface {
+	// Insert element to the heap
+	Insert(T)
+
+	// Extract top element from the heap
+	// If heap is empty, the call will panic
+	Extract() T
+
+	// Size of the heap
+	Size() int
+
+	// IsEmpty returns true for empty heap, false otherwise
+	IsEmpty() bool
 }
 
-// NewMinHeap initializes the heap structure from provided slice
-
-// input: The input slice is cloned and will not be modified by this method
-// Pass nil as input if you do not have any initial entries
-
-// compareToFunc: function that takes two entries and returns positive value if first > second,
-// negative value if first < second, 0 otherwise
-func NewMinHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
-	if orderFunc == nil {
-		panic("Nil orderFunc param")
-	}
-	buffer := make([]interface{}, len(input))
-	copy(buffer, input)
-	return initHeap(buffer, orderFunc, false)
-}
-
-// MinHeap is heap structure with max element is top
-type MaxHeap struct {
-}
-
-// NewMaxHeap initializes the heap structure from provided slice
+// NewCustomCompMinHeap initializes the heap structure from provided slice
+// returned heap implements min heap properties where min value defined by
+// lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
+func NewCustomCompMinHeap[T lib.Lesser[T]](input []T) CustomCompHeap[T] {
+	return newCustomComp(input, false)
+}
+
+// NewCustomCompMaxHeap initializes the heap structure from provided slice
+// returned heap implements max heap properties where max value defined by
+// lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
-// compareToFunc: function that takes two entries and returns positive value if first > second,
-// negative value if first < second, 0 otherwise
-func NewMaxHeap(input []interface{}, orderFunc lib.OrderFunc) Interface {
-	if orderFunc == nil {
-		panic("Nil orderFunc param")
-	}
-	buffer := make([]interface{}, len(input))
-	copy(buffer, input)
-	return initHeap(buffer, orderFunc, true)
+// input: The input slice is cloned and will not be modified by this method
+// Pass nil as input if you do not have any initial entries
+func NewCustomCompMaxHeap[T lib.Lesser[T]](input []T) CustomCompHeap[T] {
+	return newCustomComp(input, true)
 }
 
-// 0 based heap structure, parent (n -1)/2; children 2n + 1, 2n + 2
-type heap struct {
-	maxOnTop  bool
-	buffer    []interface{}
-	orderFunc lib.OrderFunc
+// NewCustomCompMinHeap initializes the heap structure from provided slice
+// returned heap implements min heap properties where min value defined by
+// < operator result of the type is at the top of the heap to be extracted first
+//
+// input: The input slice is cloned and will not be modified by this method
+// Pass nil as input if you do not have any initial entries
+func NewMinHeap[T constraints.Ordered](input []T) Heap[T] {
+	return newOrdered(input, false)
 }
 
-func initHeap(buffer []interface{}, orderFunc lib.OrderFunc, maxOnTop bool) Interface {
-	h := heap{buffer: buffer, orderFunc: orderFunc, maxOnTop: maxOnTop}
-	h.heapify()
-	return &h
-}
+// NewCustomCompMaxHeap initializes the heap structure from provided slice
+// returned heap implements max heap properties where max value defined by
+// < operator result of the type is at the top of the heap to be extracted first
+//
+// input: The input slice is cloned and will not be modified by this method
+// Pass nil as input if you do not have any initial entries
 
-func (h *heap) Insert(elem interface{}) {
-	// Insert at the end, sift up
-	h.buffer = append(h.buffer, elem)
-	h.siftUp(h.Size() - 1)
-}
-
-func (h *heap) Extract() interface{} {
-	if h.IsEmpty() {
-		return nil
-	}
-
-	// Capture first, swap with last, shrink 1, sift down from top
-	first := h.buffer[0]
-	h.swap(0, h.Size()-1)
-	h.buffer = h.buffer[:h.Size()-1]
-	h.siftDown(0)
-
-	return first
-}
-
-func (h *heap) IsEmpty() bool {
-	return h.Size() == 0
-}
-
-func (h *heap) Size() int {
-	return len(h.buffer)
-}
-
-func (h *heap) siftUp(index int) {
-	// If we are already at the root, nothing to do
-	if index == 0 {
-		return
-	}
-
-	current := index
-	parent := (current - 1) / 2
-
-	top, equal := h.findTop(current, parent)
-	if equal {
-		return
-	}
-
-	if top != parent {
-		h.swap(top, parent)
-		h.siftUp(parent)
-	}
-}
-
-func (h *heap) siftDown(index int) {
-	// If at the leaf, done
-	if index >= h.Size()/2 {
-		return
-	}
-
-	parent := index
-	left := 2*index + 1
-	right := 2*index + 2
-
-	top, equal := h.findTop(left, right)
-	if equal {
-		top, equal = h.findTop(parent, left)
-		if equal {
-			return
-		}
-	} else {
-		top, equal = h.findTop(parent, top)
-		if equal {
-			return
-		}
-	}
-
-	if top != parent {
-		h.swap(top, parent)
-		h.siftDown(top)
-	}
-}
-
-func (h *heap) findTop(first int, second int) (int, bool) {
-	if first >= h.Size() {
-		return second, false
-	}
-
-	if second >= h.Size() {
-		return first, false
-	}
-
-	var top int
-	multiplier := 1
-	if !h.maxOnTop {
-		multiplier = -1
-	}
-
-	comp := h.orderFunc(h.buffer[first], h.buffer[second]) * multiplier
-	if comp > 0 {
-		top = first
-	} else if comp < 0 {
-		top = second
-	} else {
-		// Equal
-		return -1, true
-	}
-	return top, false
-}
-
-func (h *heap) swap(i, j int) {
-	tmp := h.buffer[i]
-	h.buffer[i] = h.buffer[j]
-	h.buffer[j] = tmp
-}
-
-func (h *heap) heapify() {
-	if h.Size() <= 1 {
-		return
-	}
-
-	// leaf nodes are already heaps
-	// Start at first non-leaf node and go up to the root sifting up as needed
-	// Leaf nodes start at n/2 goes to n-1
-	for i := h.Size()/2 - 1; i >= 0; i-- {
-		h.siftDown(i)
-	}
+func NewMaxHeap[T constraints.Ordered](input []T) Heap[T] {
+	return newOrdered(input, true)
 }
