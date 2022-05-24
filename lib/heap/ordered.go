@@ -6,7 +6,7 @@ import (
 )
 
 type ordered[T constraints.Ordered] struct {
-	cch *customComp[lib.DefaultLesser[T]]
+	cch *Flex[lib.DefaultLesser[T]]
 }
 
 func (o *ordered[T]) Insert(elem T) {
@@ -26,7 +26,7 @@ func (h ordered[T]) Size() int {
 }
 
 func newOrdered[T constraints.Ordered](input []T, maxOnTop bool) Heap[T] {
-	o := &ordered[T]{cch: newCustomComp[lib.DefaultLesser[T]](nil, maxOnTop)}
+	o := &ordered[T]{cch: newFlex[lib.DefaultLesser[T]](nil, maxOnTop)}
 	for _, i := range input {
 		o.Insert(i)
 	}

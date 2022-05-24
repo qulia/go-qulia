@@ -23,7 +23,7 @@ type Heap[T constraints.Ordered] interface {
 }
 
 // Heap content of any type should implement lib.Lesser interface
-type HeapCustomComp[T lib.Lesser[T]] interface {
+type HeapFlex[T lib.Lesser[T]] interface {
 	// Insert element to the heap
 	Insert(T)
 
@@ -38,24 +38,24 @@ type HeapCustomComp[T lib.Lesser[T]] interface {
 	IsEmpty() bool
 }
 
-// NewMinHeapCustomComp initializes the heap structure from provided slice
+// NewMinHeapFlex initializes the heap structure from provided slice
 // returned heap implements min heap properties where min value defined by
 // lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
-func NewMinHeapCustomComp[T lib.Lesser[T]](input []T) HeapCustomComp[T] {
-	return newCustomComp(input, false)
+func NewMinHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
+	return newFlex(input, false)
 }
 
-// NewMaxHeapCustomComp initializes the heap structure from provided slice
+// NewMaxHeapFlex initializes the heap structure from provided slice
 // returned heap implements max heap properties where max value defined by
 // lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
-func NewMaxHeapCustomComp[T lib.Lesser[T]](input []T) HeapCustomComp[T] {
-	return newCustomComp(input, true)
+func NewMaxHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
+	return newFlex(input, true)
 }
 
 // NewMinHeap initializes the heap structure from provided slice

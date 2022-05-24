@@ -40,7 +40,7 @@ func ExampleHeap() {
 // This example initializes the heap with list of jobs and pushes another one with Insert method
 // With the provided comparison method Less on the type implementing lib.Lesser[T]
 // depending on the heap type (min/max) the jobs will be extracted in order
-func ExampleHeapCustomComp() {
+func ExampleHeapFlex() {
 	jobs := []job{
 		{
 			priority:   4,
@@ -64,8 +64,8 @@ func ExampleHeapCustomComp() {
 		},
 	}
 
-	jobMinHeap := heap.NewMinHeapCustomComp(jobs) // HeapCustomComp[job]
-	jobMaxHeap := heap.NewMaxHeapCustomComp(jobs) // HeapCustomComp[job]
+	jobMinHeap := heap.NewMinHeapFlex(jobs) // HeapFlex[job]
+	jobMaxHeap := heap.NewMaxHeapFlex(jobs) // HeapFlex[job]
 
 	fj := job{
 		priority:   5,
