@@ -23,7 +23,7 @@ type Heap[T constraints.Ordered] interface {
 }
 
 // Heap content of any type should implement lib.Lesser interface
-type CustomCompHeap[T lib.Lesser[T]] interface {
+type HeapCustomComp[T lib.Lesser[T]] interface {
 	// Insert element to the heap
 	Insert(T)
 
@@ -38,43 +38,42 @@ type CustomCompHeap[T lib.Lesser[T]] interface {
 	IsEmpty() bool
 }
 
-// NewCustomCompMinHeap initializes the heap structure from provided slice
+// NewMinHeapCustomComp initializes the heap structure from provided slice
 // returned heap implements min heap properties where min value defined by
 // lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
-func NewCustomCompMinHeap[T lib.Lesser[T]](input []T) CustomCompHeap[T] {
+func NewMinHeapCustomComp[T lib.Lesser[T]](input []T) HeapCustomComp[T] {
 	return newCustomComp(input, false)
 }
 
-// NewCustomCompMaxHeap initializes the heap structure from provided slice
+// NewMaxHeapCustomComp initializes the heap structure from provided slice
 // returned heap implements max heap properties where max value defined by
 // lib.Lesser implementation of the type is at the top of the heap to be extracted first
 //
-// input: The input slice is cloned and will not be modified by this method
+// input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
-func NewCustomCompMaxHeap[T lib.Lesser[T]](input []T) CustomCompHeap[T] {
+func NewMaxHeapCustomComp[T lib.Lesser[T]](input []T) HeapCustomComp[T] {
 	return newCustomComp(input, true)
 }
 
-// NewCustomCompMinHeap initializes the heap structure from provided slice
+// NewMinHeap initializes the heap structure from provided slice
 // returned heap implements min heap properties where min value defined by
 // < operator result of the type is at the top of the heap to be extracted first
 //
-// input: The input slice is cloned and will not be modified by this method
+// input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
 func NewMinHeap[T constraints.Ordered](input []T) Heap[T] {
 	return newOrdered(input, false)
 }
 
-// NewCustomCompMaxHeap initializes the heap structure from provided slice
+// NewMaxHeap initializes the heap structure from provided slice
 // returned heap implements max heap properties where max value defined by
 // < operator result of the type is at the top of the heap to be extracted first
 //
-// input: The input slice is cloned and will not be modified by this method
+// input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
-
 func NewMaxHeap[T constraints.Ordered](input []T) Heap[T] {
 	return newOrdered(input, true)
 }

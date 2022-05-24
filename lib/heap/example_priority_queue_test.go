@@ -17,10 +17,30 @@ func (j job) Less(other job) bool {
 	return j.priority < other.priority
 }
 
+// This example initializes the max heap with slice of ints
+// With < operator as comparison the values are extracted in descending order
+// Any type met by constraints.Ordered can be used for the content of the heap
+func ExampleHeap() {
+	iHeap := heap.NewMaxHeap([]int{3, 7, 4, 4, 1}) // Heap[int]
+	iHeap.Insert(9)
+
+	for !iHeap.IsEmpty() {
+		fmt.Printf("Out: %d\n", iHeap.Extract())
+	}
+
+	// Output:
+	// Out: 9
+	// Out: 7
+	// Out: 4
+	// Out: 4
+	// Out: 3
+	// Out: 1
+}
+
 // This example initializes the heap with list of jobs and pushes another one with Insert method
-// With the provided comparison method Less on the type
+// With the provided comparison method Less on the type implementing lib.Lesser[T]
 // depending on the heap type (min/max) the jobs will be extracted in order
-func ExampleCustomCompHeap() {
+func ExampleHeapCustomComp() {
 	jobs := []job{
 		{
 			priority:   4,
@@ -44,8 +64,8 @@ func ExampleCustomCompHeap() {
 		},
 	}
 
-	jobMinHeap := heap.NewCustomCompMinHeap(jobs)
-	jobMaxHeap := heap.NewCustomCompMaxHeap(jobs)
+	jobMinHeap := heap.NewMinHeapCustomComp(jobs) // HeapCustomComp[job]
+	jobMaxHeap := heap.NewMaxHeapCustomComp(jobs) // HeapCustomComp[job]
 
 	fj := job{
 		priority:   5,
