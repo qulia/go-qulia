@@ -1,35 +1,33 @@
 package tree
 
-import (
-	"github.com/qulia/go-qulia/lib"
-)
+import "golang.org/x/exp/constraints"
 
-type SegmentTreeInterface interface {
-	UpdateRange(start, end int, updateFunc lib.UpdateFunc)
-	QueryRange(start, end int) interface{}
+type SegmentTree[T constraints.Ordered] interface {
+	UpdateRange(start, end int, updateFunc UpdateFunc[T])
+	QueryRange(start, end int) T
 }
 
-type SegmentTree struct {
-	qFunc lib.QueryEvalFunc
-	dFunc lib.DisjointValFunc
-	root  *segmentTreeNode
+type orderedSegmentTree[T constraints.Ordered] struct {
+	qFunc QueryEvalFunc[T]   // used to aggregate result while navigating the tree
+	dFunc DisjointValFunc[T] // used to get a value when the range is disjoint
+	root  *segmentTreeNode[T]
 }
 
-func NewSegmentTree(qFunc lib.QueryEvalFunc, dFunc lib.DisjointValFunc) SegmentTreeInterface {
-	st := SegmentTree{}
+func NewSegmentTree[T constraints.Ordered](qFunc QueryEvalFunc[T], dFunc DisjointValFunc[T]) *orderedSegmentTree[T] {
+	st := orderedSegmentTree[T]{}
 	st.qFunc = qFunc
 	st.dFunc = dFunc
-	st.root = &segmentTreeNode{
+	st.root = &segmentTreeNode[T]{
 		r: rng{0, 1e9},
 	}
 	return &st
 }
 
-func (st SegmentTree) UpdateRange(start, end int, updateFunc lib.UpdateFunc) {
+func (st orderedSegmentTree[T]) UpdateRange(start, end int, updateFunc UpdateFunc[T]) {
 	st.root.updateRange(rng{start, end}, updateFunc, st.qFunc)
 }
 
-func (st SegmentTree) QueryRange(start, end int) interface{} {
+func (st orderedSegmentTree[T]) QueryRange(start, end int) T {
 	return st.root.queryRange(rng{start, end}, st.qFunc, st.dFunc)
 }
 
@@ -49,58 +47,39 @@ func (r rng) covers(other rng) bool {
 	return r.start <= other.start && r.end >= other.end
 }
 
-type lazy struct {
-	uFunc lib.UpdateFunc
+type lazy[T constraints.Ordered] struct {
+	uFunc UpdateFunc[T]
 	count int
 }
 
-type segmentTreeNode struct {
+type segmentTreeNode[T constraints.Ordered] struct {
 	r           rng
-	data        interface{}
-	lz          lazy
-	left, right *segmentTreeNode
+	data        T
+	left, right *segmentTreeNode[T]
 }
 
-func (stn segmentTreeNode) isLeaf() bool {
+func (stn segmentTreeNode[T]) isLeaf() bool {
 	return stn.left == nil
 }
 
-func (stn *segmentTreeNode) lazyUpdate() {
+func (stn *segmentTreeNode[T]) split() {
 	if stn.r.start != stn.r.end {
 		if stn.isLeaf() {
 			m := stn.r.mid()
-			stn.left = &segmentTreeNode{r: rng{stn.r.start, m}, lz: lazy{}}
-			stn.right = &segmentTreeNode{r: rng{m + 1, stn.r.end}, lz: lazy{}}
+			stn.left = &segmentTreeNode[T]{r: rng{stn.r.start, m}}
+			stn.right = &segmentTreeNode[T]{r: rng{m + 1, stn.r.end}}
 		}
-	}
-
-	if stn.lz.count != 0 {
-		for i := 0; i < stn.lz.count; i++ {
-			stn.data = stn.lz.uFunc(stn.data)
-		}
-		if !stn.isLeaf() {
-			// propagate lazy
-			stn.left.lz = stn.lz
-			stn.right.lz = stn.lz
-		}
-		stn.lz.count = 0
 	}
 }
 
-func (stn *segmentTreeNode) updateRange(r rng, uFunc lib.UpdateFunc, qFunc lib.QueryEvalFunc) {
-	stn.lazyUpdate()
+func (stn *segmentTreeNode[T]) updateRange(r rng, uFunc UpdateFunc[T], qFunc QueryEvalFunc[T]) {
+	stn.split()
 	if stn.r.disjoint(r) {
 		return
 	}
 
-	if r.covers(stn.r) {
+	if stn.isLeaf() {
 		stn.data = uFunc(stn.data)
-		if !stn.isLeaf() {
-			stn.left.lz.uFunc = uFunc
-			stn.left.lz.count++
-			stn.right.lz.uFunc = uFunc
-			stn.right.lz.count++
-		}
 		return
 	}
 
@@ -109,8 +88,8 @@ func (stn *segmentTreeNode) updateRange(r rng, uFunc lib.UpdateFunc, qFunc lib.Q
 	stn.data = qFunc(stn.left.data, stn.right.data)
 }
 
-func (stn segmentTreeNode) queryRange(r rng, qFunc lib.QueryEvalFunc, dFunc lib.DisjointValFunc) interface{} {
-	stn.lazyUpdate()
+func (stn segmentTreeNode[T]) queryRange(r rng, qFunc QueryEvalFunc[T], dFunc DisjointValFunc[T]) T {
+	stn.split()
 	if stn.r.disjoint(r) {
 		return dFunc()
 	}
@@ -121,3 +100,7 @@ func (stn segmentTreeNode) queryRange(r rng, qFunc lib.QueryEvalFunc, dFunc lib.
 
 	return qFunc(stn.left.queryRange(r, qFunc, dFunc), stn.right.queryRange(r, qFunc, dFunc))
 }
+
+type QueryEvalFunc[T constraints.Ordered] func(a, b T) T
+type UpdateFunc[T constraints.Ordered] func(current T) T
+type DisjointValFunc[T constraints.Ordered] func() T
