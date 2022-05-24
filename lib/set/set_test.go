@@ -65,7 +65,7 @@ func (ek employee) Key() int {
 
 func TestCustomKey(t *testing.T) {
 	emps := []employee{{1, "n1", "sn1", nil}, {2, "n2", "sn2", []int{1}}, {3, "n1", "sn1", nil}}
-	s := set.NewCustomKeySet[employee, int]()
+	s := set.NewSetFlex[employee, int]()
 	for _, e := range emps {
 		s.Add(e)
 	}
@@ -76,13 +76,13 @@ func TestCustomKey(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3}, eids)
 
 	emps2 := []employee{{1, "n1", "sn1", nil}, {3, "n1", "sn1", nil}}
-	s2 := set.NewCustomKeySet[employee, int]()
+	s2 := set.NewSetFlex[employee, int]()
 	s2.FromSlice(emps2)
 	assert.True(t, s2.IsSubsetOf(s))
 	assert.False(t, s2.IsSupersetOf(s))
 	assert.Equal(t, 3, s2.Union(s).Len())
 	assert.Equal(t, 2, s2.Intersection(s).Len())
 
-	s3 := set.NewCustomKeySet[employee, int]()
+	s3 := set.NewSetFlex[employee, int]()
 	assert.True(t, s3.FromSlice(s.ToSlice()).Union(s).IsSubsetOf(s))
 }

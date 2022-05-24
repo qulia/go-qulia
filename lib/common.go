@@ -2,9 +2,7 @@ package lib
 
 import (
 	"math"
-	"strconv"
 
-	"github.com/qulia/go-qulia/lib/hash"
 	"golang.org/x/exp/constraints"
 )
 
@@ -51,14 +49,6 @@ var (
 		} else {
 			return 0
 		}
-	}
-
-	IntKeyFunc = func(elem interface{}) string {
-		return strconv.Itoa(elem.(int))
-	}
-
-	HashKeyFunc = func(elem interface{}) string {
-		return hash.Sha1(elem)
 	}
 )
 

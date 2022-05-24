@@ -3,11 +3,11 @@ package set
 import "github.com/qulia/go-qulia/lib"
 
 type comparableSet[T comparable] struct {
-	ks *keyedSet[lib.DefaultKeyable[T], T]
+	ks *keyableSet[lib.DefaultKeyable[T], T]
 }
 
 func newComparableSet[T comparable]() *comparableSet[T] {
-	return &comparableSet[T]{ks: newKeyedSet[lib.DefaultKeyable[T], T]()}
+	return &comparableSet[T]{ks: newkeyableSet[lib.DefaultKeyable[T], T]()}
 }
 
 func (s *comparableSet[T]) Len() int {
