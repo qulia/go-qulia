@@ -1,5 +1,6 @@
 package access
 
+// Control access to obj with unique access
 type Unique[T any] struct {
 	obj T
 	ch  chan T
