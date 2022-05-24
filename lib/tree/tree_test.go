@@ -17,16 +17,9 @@ func TestTreeBasic(t *testing.T) {
 	root.Right.Right = tree.NewNode(8)
 
 	var result []string
-	tree.VisitInOrder(root, func(elem interface{}) {
-		var elemString string
-		if elem == nil {
-			elemString = "nil"
-		} else {
-			elemString = fmt.Sprintf("%d", elem.(int))
-		}
-
-		result = append(result, elemString)
+	tree.VisitInOrder(root, func(elem int) {
+		result = append(result, fmt.Sprintf("%d", elem))
 	})
 
-	assert.Equal(t, []string{"nil", "4", "nil", "3", "nil", "5", "nil", "6", "nil", "8", "nil"}, result)
+	assert.Equal(t, []string{"4", "3", "5", "6", "8"}, result)
 }

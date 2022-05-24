@@ -1,89 +1,80 @@
 package tree
 
 import (
-	"github.com/qulia/go-qulia/lib"
+	"golang.org/x/exp/constraints"
 )
 
-// Binary Search Tree implementation https://en.wikipedia.org/wiki/Binary_search_tree
+// Binary Search Tree https://en.wikipedia.org/wiki/Binary_search_tree
 // Element comparison is based on OrderFunc provided to NewBST method
-type BSTInterface interface {
+type BST[T constraints.Ordered] interface {
 	// Adds new elem to the tree, will not check if same val already exists
-	Insert(interface{}) *Node
+	Insert(T) *Node[T]
 
 	// Returns the first node that matches
-	Search(interface{}) *Node
+	Search(T) *Node[T]
 
 	// In-order traversal of tree copied to slice
-	ToSlice() []interface{}
+	ToSlice() []T
 
 	// In-order traversal of tree, calling the func for each element visited
-	Traverse(func(interface{}))
+	Traverse(func(T))
 
 	// Returns the largest value node that is smaller than or equal to the given value.
-	Floor(interface{}) *Node
+	Floor(T) *Node[T]
 
 	// Returns the smallest value node that is larger than or equal to the given value.
-	Ceiling(interface{}) *Node
+	Ceiling(T) *Node[T]
 }
 
-type BST struct {
-	root      *Node
-	orderFunc lib.OrderFunc
+type bstOrdered[T constraints.Ordered] struct {
+	root *Node[T]
 }
 
-func NewBST(orderFunc lib.OrderFunc) *BST {
-	if orderFunc == nil {
-		panic("Nil orderFunc param")
-	}
-	bst := BST{orderFunc: orderFunc}
-	return &bst
+func NewBST[T constraints.Ordered]() *bstOrdered[T] {
+	return &bstOrdered[T]{}
 }
 
-func (bst *BST) Search(elem interface{}) *Node {
+func (bst *bstOrdered[T]) Search(elem T) *Node[T] {
 	return bst.search(bst.root, elem)
 }
 
-func (bst *BST) search(root *Node, elem interface{}) *Node {
+func (bst *bstOrdered[T]) search(root *Node[T], elem T) *Node[T] {
 	if root == nil {
 		return nil
 	}
 
-	comp := bst.orderFunc(elem, root.Data)
-	if comp == 0 {
+	if elem == root.Data {
 		return root
 	}
 
-	if comp < 0 {
+	if elem < root.Data {
 		return bst.search(root.Left, elem)
 	}
 
 	return bst.search(root.Right, elem)
 }
 
-func (bst *BST) ToSlice() []interface{} {
-	var res []interface{}
-	bst.Traverse(func(elem interface{}) {
-		if elem == nil {
-			return
-		}
+func (bst *bstOrdered[T]) ToSlice() []T {
+	var res []T
+	bst.Traverse(func(elem T) {
 		res = append(res, elem)
 	})
 
 	return res
 }
 
-func (bst *BST) Traverse(call func(interface{})) {
+func (bst *bstOrdered[T]) Traverse(call func(T)) {
 	VisitInOrder(bst.root, call)
 }
 
-func (bst *BST) Insert(elem interface{}) *Node {
+func (bst *bstOrdered[T]) Insert(elem T) *Node[T] {
 	return bst.insert(&bst.root, elem)
 }
 
-func (bst *BST) insert(root **Node, elem interface{}) *Node {
+func (bst *bstOrdered[T]) insert(root **Node[T], elem T) *Node[T] {
 	if *root == nil {
 		*root = NewNode(elem)
-	} else if bst.orderFunc(elem, (*root).Data) < 0 {
+	} else if elem < (*root).Data {
 		(*root).Left = bst.insert(&(*root).Left, elem)
 	} else {
 		(*root).Right = bst.insert(&(*root).Right, elem)
@@ -92,19 +83,19 @@ func (bst *BST) insert(root **Node, elem interface{}) *Node {
 	return *root
 }
 
-func (bst *BST) Floor(elem interface{}) *Node {
+func (bst *bstOrdered[T]) Floor(elem T) *Node[T] {
 	return bst.floor(elem, bst.root)
 }
 
-func (bst *BST) floor(elem interface{}, root *Node) *Node {
+func (bst *bstOrdered[T]) floor(elem T, root *Node[T]) *Node[T] {
 	// if we reach to the leaf and value does not match, not found
 	if root == nil {
 		return nil
 	}
-	comp := bst.orderFunc(root.Data, elem)
-	if comp == 0 {
+
+	if root.Data == elem {
 		return root
-	} else if comp > 0 {
+	} else if root.Data > elem {
 		// root is larger, search left
 		return bst.floor(elem, root.Left)
 	} else {
@@ -118,20 +109,19 @@ func (bst *BST) floor(elem interface{}, root *Node) *Node {
 	}
 }
 
-func (bst *BST) Ceiling(elem interface{}) *Node {
+func (bst *bstOrdered[T]) Ceiling(elem T) *Node[T] {
 	return bst.ceiling(elem, bst.root)
 }
 
-func (bst *BST) ceiling(elem interface{}, root *Node) *Node {
+func (bst *bstOrdered[T]) ceiling(elem T, root *Node[T]) *Node[T] {
 	// if we reach to the leaf and value does not match, not found
 	if root == nil {
 		return nil
 	}
 
-	comp := bst.orderFunc(root.Data, elem)
-	if comp == 0 {
+	if root.Data == elem {
 		return root
-	} else if comp < 0 {
+	} else if root.Data < elem {
 		// root is smaller, search right
 		return bst.ceiling(elem, root.Right)
 	} else {

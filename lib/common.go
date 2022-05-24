@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"math"
-
 	"golang.org/x/exp/constraints"
 )
 
@@ -36,55 +34,4 @@ type DefaultKeyable[T comparable] struct {
 
 func (dk DefaultKeyable[T]) Key() T {
 	return dk.Val
-}
-
-var (
-	IntCompFunc = func(first, second interface{}) int {
-		firstInt := first.(int)
-		secondInt := second.(int)
-		if firstInt < secondInt {
-			return -1
-		} else if firstInt > secondInt {
-			return 1
-		} else {
-			return 0
-		}
-	}
-)
-
-type QueryEvalFunc func(a, b interface{}) interface{}
-type UpdateFunc func(current interface{}) interface{}
-type DisjointValFunc func() interface{}
-
-func IntQueryEvalMinFunc(a, b interface{}) interface{} {
-	var aInt, bInt int
-	if a == nil {
-		aInt = math.MaxInt32
-	} else {
-		aInt = a.(int)
-	}
-	if b == nil {
-		bInt = math.MaxInt32
-	} else {
-		bInt = b.(int)
-	}
-	if aInt < bInt {
-		return aInt
-	}
-	return bInt
-}
-
-func IntQueryEvalSumFunc(a, b interface{}) interface{} {
-	var aInt, bInt int
-	if a == nil {
-		aInt = 0
-	} else {
-		aInt = a.(int)
-	}
-	if b == nil {
-		bInt = 0
-	} else {
-		bInt = b.(int)
-	}
-	return aInt + bInt
 }
