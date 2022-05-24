@@ -3,8 +3,8 @@ package access_test
 import (
 	"log"
 	"strconv"
+	"sync"
 	"testing"
-	"time"
 
 	"github.com/qulia/go-qulia/concurrency/access"
 	"github.com/qulia/go-qulia/lib/queue"
@@ -17,43 +17,45 @@ type job struct {
 
 func TestUniqueBasic(t *testing.T) {
 	// Create a queue can be accessed exclusively only by one go routine
-	jobQueueUnique := access.NewUnique(queue.NewQueue())
-
+	accessHolder := access.NewUnique(queue.NewQueue[job]())
+	accessHolder.Release()
 	// Run consumer
 	go func() {
 		defer log.Printf("Exiting consumer")
 		for {
-			// Acquire the job queue before consuming
-			jobQueue := jobQueueUnique.Acquire()
-			if jobQueue == nil {
-				jobQueueUnique.Release()
+			// Acquire the job queue before consuming from
+			jobQueue, ok := accessHolder.Acquire()
+			if !ok {
 				return
 			}
 
-			job := jobQueue.(*queue.Queue).Dequeue()
-			log.Printf("Processing job %v", job)
-			jobQueueUnique.Release()
-			log.Printf("Done processing job %v", job)
+			if !jobQueue.IsEmpty() {
+				job := jobQueue.Dequeue()
+				log.Printf("Processing job %v", job)
+			}
+			accessHolder.Release()
 		}
 	}()
 
-	go func() {
-		for i := 0; i < 10; i++ {
-			jobQueue := jobQueueUnique.Acquire()
+	senderWg := &sync.WaitGroup{}
+	senderWg.Add(10)
+	for i := 0; i < 10; i++ {
+		go func(i int) {
+			jobQueue, ok := accessHolder.Acquire()
+			if !ok {
+				return
+			}
 			job := job{
 				id:   i,
 				name: "job" + strconv.Itoa(i),
 			}
 			log.Printf("Queuing job %v", job)
-			jobQueue.(*queue.Queue).Enqueue(job)
-			jobQueueUnique.Release()
-		}
+			jobQueue.Enqueue(job)
+			accessHolder.Release()
+			senderWg.Done()
+		}(i)
+	}
 
-		log.Printf("Done queuing jobs")
-		jobQueueUnique.Done()
-		log.Printf("Exiting producer")
-	}()
-
-	jobQueueUnique.Release()
-	time.Sleep(time.Second * 2)
+	senderWg.Wait()
+	accessHolder.Close()
 }

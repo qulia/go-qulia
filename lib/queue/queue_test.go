@@ -4,22 +4,22 @@ import (
 	"testing"
 
 	"github.com/qulia/go-qulia/lib/queue"
-
 	"github.com/stretchr/testify/assert"
 )
 
 func TestQueueBasic(t *testing.T) {
-	testQueue := queue.Queue{}
-	verify(t, &testQueue)
+	testQueue := queue.NewQueue[int]()
+	verify(t, testQueue)
 }
 
-func verify(t *testing.T, queue queue.Interface) {
+func verify(t *testing.T, queue queue.Queue[int]) {
 	queue.Enqueue(3)
-	queue.Enqueue("strings")
-	queue.Enqueue(false)
+	queue.Enqueue(7)
+	queue.Enqueue(0)
 
-	assert.Equal(t, 3, queue.Dequeue().(int))
-	assert.Equal(t, "strings", queue.Dequeue().(string))
-	assert.Equal(t, false, queue.Dequeue().(bool))
-	assert.Nil(t, queue.Dequeue())
+	assert.Equal(t, 3, queue.Dequeue())
+	assert.Equal(t, 7, queue.Dequeue())
+	assert.Equal(t, 0, queue.Dequeue())
+	assert.True(t, queue.IsEmpty())
+	assert.Panics(t, func() { queue.Dequeue() })
 }
