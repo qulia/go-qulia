@@ -1,30 +1,29 @@
 package access
 
-type Unique struct {
-	obj interface{}
-	ch  chan interface{}
+type Unique[T any] struct {
+	obj T
+	ch  chan T
 }
 
-func NewUnique(obj interface{}) *Unique {
-	u := Unique{
+func NewUnique[T any](obj T) *Unique[T] {
+	u := Unique[T]{
 		obj: obj,
-		ch:  make(chan interface{}, 1),
+		ch:  make(chan T, 1),
 	}
 
 	return &u
 }
 
-func (u *Unique) Acquire() interface{} {
-	return <-u.ch
+func (u *Unique[T]) Acquire() (T, bool) {
+	o, more := <-u.ch
+	return o, more
 }
 
-func (u *Unique) Release() {
+func (u *Unique[T]) Release() {
 	u.ch <- u.obj
 }
 
-func (u *Unique) Done() {
-	// Wait for the current user to be done before pushing nil
+func (u *Unique[T]) Close() {
 	u.Acquire()
-	u.obj = nil
-	u.Release()
+	close(u.ch)
 }

@@ -1,17 +1,13 @@
 package queue
 
-import (
-	"github.com/qulia/go-qulia/lib"
-)
+// FIFO Queue
+type Queue[T any] interface {
+	// Enqueues element
+	Enqueue(x T)
 
-// Interface implemented by stack, LIFO
-type Interface interface {
-	// Enqueue element to the stack
-	Enqueue(x interface{})
-
-	// Dequeue element
-	// If queue is empty, returns nil
-	Dequeue() interface{}
+	// Dequeues element
+	// If queue is empty, it panics
+	Dequeue() T
 
 	// IsEmpty returns true if queue is empty
 	IsEmpty() bool
@@ -20,36 +16,29 @@ type Interface interface {
 	Length() int
 }
 
-// Implementation of queue.Interface
-type Queue struct {
-	elements []interface{}
-	Metadata lib.Metadata
+// Implementation of queue interface
+type queue[T any] struct {
+	elements []T
 }
 
-func NewQueue() *Queue {
-	q := Queue{}
-	q.Metadata = lib.Metadata{}
-
-	return &q
+func NewQueue[T any]() Queue[T] {
+	return &queue[T]{}
 }
 
-func (q *Queue) Enqueue(elem interface{}) {
+func (q *queue[T]) Enqueue(elem T) {
 	q.elements = append(q.elements, elem)
 }
 
-func (q *Queue) Dequeue() interface{} {
-	if q.IsEmpty() {
-		return nil
-	}
+func (q *queue[T]) Dequeue() T {
 	elem := q.elements[0]
 	q.elements = q.elements[1:len(q.elements)]
 	return elem
 }
 
-func (q *Queue) IsEmpty() bool {
+func (q *queue[T]) IsEmpty() bool {
 	return q.Length() == 0
 }
 
-func (st *Queue) Length() int {
-	return len(st.elements)
+func (q *queue[T]) Length() int {
+	return len(q.elements)
 }
