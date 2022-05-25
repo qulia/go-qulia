@@ -38,17 +38,12 @@ type Node struct {
 
 	// Source node.Name is the key, current node is the target
 	EdgesIn map[string]Edge
-
-	// This is free form map to set values while traversing graph, e.g. "isVisited = true"
-	// Normally would be used for more advanced scenarios
-	MData lib.Metadata
 }
 
 // Edge from source to target with metadata
 type Edge struct {
-	Source   *Node
-	Target   *Node
-	Metadata lib.Metadata
+	Source *Node
+	Target *Node
 }
 
 // NewNode creates a node later to be added to the graph
@@ -56,7 +51,6 @@ func NewNode(name string, data interface{}) *Node {
 	node := Node{
 		Name:     name,
 		Data:     data,
-		MData:    lib.Metadata{},
 		EdgesIn:  make(map[string]Edge),
 		EdgesOut: make(map[string]Edge),
 	}
@@ -68,7 +62,6 @@ func NewNode(name string, data interface{}) *Node {
 func NewGraph() *Graph {
 	g := Graph{}
 	g.Nodes = make(map[string]*Node)
-	g.MData = lib.Metadata{}
 	return &g
 }
 
@@ -103,9 +96,8 @@ func (g *Graph) addEdge(from, to *Node) {
 		}
 
 		v := Edge{
-			Source:   from,
-			Target:   to,
-			Metadata: lib.Metadata{},
+			Source: from,
+			Target: to,
 		}
 
 		g.Nodes[from.Name].EdgesOut[to.Name] = v

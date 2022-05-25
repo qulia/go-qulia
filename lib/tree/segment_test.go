@@ -10,7 +10,7 @@ import (
 
 func TestSegmentTreeMinEval(t *testing.T) {
 	input := []int{1, 9, 5, 3, 7, 2, 4, 6, 8}
-	st := NewSegmentTree(MaxEvalFunc[int], func() int { return math.MinInt32 })
+	st := NewSegmentTree(MaxEvalFunc[int], math.MinInt32)
 	initSt(t, input, st)
 
 	assert.Equal(t, 7, st.QueryRange(2, 4))
@@ -41,7 +41,7 @@ func TestSegmentTreeMinEval(t *testing.T) {
 
 func TestSegmentTreeSumEval(t *testing.T) {
 	input := []int{1, 9, 5, 3, 7, 2, 4, 6, 8}
-	st := NewSegmentTree(SumFunc[int], func() int { return 0 })
+	st := NewSegmentTree(SumFunc[int], 0)
 	initSt(t, input, st)
 
 	assert.Equal(t, 15, st.QueryRange(2, 4))
