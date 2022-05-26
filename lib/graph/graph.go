@@ -1,131 +1,26 @@
 package graph
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/qulia/go-qulia/lib"
+	"github.com/qulia/go-qulia/lib/set"
 )
 
-type Interface interface {
+type Graph[T comparable] interface {
 	// GetNodes returns map of all nodes in the graph
-	GetNodes() map[string]*Node
+	GetNodes() set.Set[T]
 
 	// Add relation from source to target node
-	// if target is nil just add the node with no connection
-	Add(source, target *Node)
+	Add(T, T)
 
-	// Add bidirectional relation between node1 and node2, equivalent to calling
-	// Add(node1, node2) Add(node2, node1)
-	AddBidirectional(node1, node2 *Node)
+	// Add relation from source to target node
+	AddNode(T)
+
+	// Add bidirectional relation between node1 and node2
+	AddBidirectional(T, T)
+
+	// Adjacent nodes from a source
+	Adjacencies(T) map[T]bool // not using Set to allow range iteration
 }
 
-// Graph with Nodes and metadata
-type Graph struct {
-	Nodes map[string]*Node
-	MData lib.Metadata
-}
-
-// Node with name, object holding the data, connections in and out, and metadata
-type Node struct {
-	Name string
-
-	// The data associated with Node, e.g. person
-	Data interface{}
-
-	// Outgoing edges Target node.Name is the key, current node is the source
-	EdgesOut map[string]Edge
-
-	// Source node.Name is the key, current node is the target
-	EdgesIn map[string]Edge
-}
-
-// Edge from source to target with metadata
-type Edge struct {
-	Source *Node
-	Target *Node
-}
-
-// NewNode creates a node later to be added to the graph
-func NewNode(name string, data interface{}) *Node {
-	node := Node{
-		Name:     name,
-		Data:     data,
-		EdgesIn:  make(map[string]Edge),
-		EdgesOut: make(map[string]Edge),
-	}
-
-	return &node
-}
-
-// NewGraph initialized graph structure
-func NewGraph() *Graph {
-	g := Graph{}
-	g.Nodes = make(map[string]*Node)
-	return &g
-}
-
-// Add relation to the graph, directional from source node to target node
-func (g *Graph) Add(source, target *Node) {
-	g.Nodes[source.Name] = source
-
-	if target != nil {
-		g.Nodes[target.Name] = target
-		g.addEdge(source, target)
-	}
-}
-
-// Add relation to the graph, bidirectional with node1 and node2, each direction with its own metadata
-func (g *Graph) AddBidirectional(node1, node2 *Node) {
-	g.Nodes[node1.Name] = node1
-	g.Nodes[node2.Name] = node2
-	g.addEdge(node1, node2)
-	g.addEdge(node2, node1)
-}
-
-// GetNodes
-func (g *Graph) GetNodes() map[string]*Node {
-	return g.Nodes
-}
-
-func (g *Graph) addEdge(from, to *Node) {
-	if to != nil && from != nil {
-		if _, ok := g.Nodes[from.Name].EdgesOut[to.Name]; ok {
-			// Already has edge from source to dest
-			return
-		}
-
-		v := Edge{
-			Source: from,
-			Target: to,
-		}
-
-		g.Nodes[from.Name].EdgesOut[to.Name] = v
-		g.Nodes[to.Name].EdgesIn[from.Name] = v
-	}
-}
-
-// Return Dot string of the graph, can be used with Graphviz(https://graphviz.org/) to visualize
-func (g *Graph) Dot() string {
-	sb := strings.Builder{}
-
-	sb.WriteString(`strict digraph {`)
-	sb.WriteString("\n")
-
-	nodes := g.GetNodes()
-	for _, n := range nodes {
-		n.WriteDot(&sb)
-	}
-
-	sb.WriteString(`}`)
-
-	return sb.String()
-}
-
-func (n *Node) WriteDot(sb *strings.Builder) {
-	sb.WriteString(n.Name)
-	sb.WriteString("\n")
-	for target := range n.EdgesOut {
-		sb.WriteString(fmt.Sprintf("%s -> %s\n", n.Name, target))
-	}
+func NewGraph[T comparable]() Graph[T] {
+	return &graphComparable[T]{map[T]map[T]bool{}, set.NewSet[T]()}
 }

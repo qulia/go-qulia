@@ -4,27 +4,26 @@ import (
 	"testing"
 
 	"github.com/qulia/go-qulia/lib/graph"
+	"github.com/qulia/go-qulia/lib/set"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGraphBasic(t *testing.T) {
-	testGraph := graph.NewGraph()
-	testGraph.Add(graph.NewNode("node1", nil), graph.NewNode("node2", nil))
-	testGraph.Add(graph.NewNode("node3", nil), nil)
-	testGraph.AddBidirectional(graph.NewNode("node4", nil), graph.NewNode("node5", nil))
+	testGraph := graph.NewGraph[string]()
+	testGraph.Add("node1", "node2")
+	testGraph.AddNode("node3")
+	testGraph.AddBidirectional("node4", "node5")
+	testGraph.AddBidirectional("node3", "node4")
 
-	// Check expected edges
-	assert.NotNil(t, testGraph.Nodes["node1"].EdgesOut["node2"])
-	assert.NotNil(t, testGraph.Nodes["node2"].EdgesIn["node1"])
-	assert.Empty(t, testGraph.Nodes["node2"].EdgesOut)
-	assert.Empty(t, testGraph.Nodes["node3"].EdgesOut)
-	assert.NotNil(t, testGraph.Nodes["node4"].EdgesOut["node5"])
-	assert.NotNil(t, testGraph.Nodes["node4"].EdgesIn["node5"])
-	assert.NotNil(t, testGraph.Nodes["node5"].EdgesOut["node4"])
-	assert.NotNil(t, testGraph.Nodes["node5"].EdgesIn["node4"])
+	expected := set.NewSet[string]()
+	expected.FromSlice([]string{"node1", "node2", "node3", "node4", "node5"})
 
-	if generateViz {
+	assert.Equal(t, expected, testGraph.GetNodes())
+	assert.True(t, testGraph.Adjacencies("node3")["node4"])
+	assert.True(t, testGraph.Adjacencies("node4")["node3"])
+
+	if generateViz { // set true in config_test.go to generate the viz
 		// Generage graph
-		dotToImageGraphviz("TestGraphBasic", "svg", []byte(testGraph.Dot()))
+		dotToImageGraphviz("TestGraphBasic", "svg", []byte(GraphToDot(testGraph)))
 	}
 }
