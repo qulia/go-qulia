@@ -7,10 +7,6 @@ import (
 	"github.com/qulia/go-qulia/lib/graph"
 )
 
-const (
-	availableCount = "availableCount"
-)
-
 // This is a problem where we need to find the itinerary using the tickets
 // e.g. tickets [A, B] [B, C] [B,D] [C,B] itinerary A->B->C->B->D using all tickets
 // Note that if we had picked A->B->D we would not be able to use all tickets, so not the right path
@@ -18,47 +14,41 @@ const (
 // There could be multiple tickets available for the same source, dest pair. So we can keep track of
 // "available edges" in the metadata
 func ExampleGraph_itinerary() {
-	tickets := [][]string{{"A", "B"}, {"B", "C"}, {"B", "D"}, {"C", "B"}}
-	fmt.Printf("%v\n", testWithTickets(tickets))
+	ticketsInputs := [][]ticket{
+		{{"A", "B"}, {"B", "C"}, {"B", "D"}, {"C", "B"}},
+		{{"A", "B"}, {"A", "C"}, {"C", "A"}},
+		// Note there are two tickets D,B
+		{{"E", "F"}, {"D", "B"}, {"B", "C"}, {"C", "B"}, {"B", "E"}, {"D", "B"}, {"F", "D"}, {"D", "C"}, {"B", "D"}, {"C", "D"}},
+	}
 
-	tickets = [][]string{{"A", "B"}, {"A", "C"}, {"C", "A"}}
-	fmt.Printf("%v\n", testWithTickets(tickets))
+	for _, input := range ticketsInputs {
+		fmt.Printf("%v\n", testWithTickets(input))
+	}
 
-	// Note there are two tickets D,B so availableCount is initially 2 for this edge
-	tickets = [][]string{{"E", "F"}, {"D", "B"}, {"B", "C"}, {"C", "B"}, {"B", "E"}, {"D", "B"}, {"F", "D"}, {"D", "C"}, {"B", "D"}, {"C", "D"}}
-	fmt.Printf("%v", testWithTickets(tickets))
 	//Output:
 	//[A B C B D]
 	//[A C A B]
 	//[B C B D B E F D C D B]
 }
 
-func testWithTickets(tickets [][]string) []string {
+func testWithTickets(tickets []ticket) []string {
 	// Create graph with source, dest in tickets
-	cGraph := graph.NewGraph()
+	cGraph := graph.NewGraph[string]()
+	ticketCount := map[ticket]int{}
 	for _, ticket := range tickets {
-		cGraph.Add(createOrGetNewNode(cGraph, ticket[0]), createOrGetNewNode(cGraph, ticket[1]))
-		m := cGraph.Nodes[ticket[0]].EdgesOut[ticket[1]].Metadata
-		if _, ok := m[availableCount]; !ok {
-			m[availableCount] = 0
-		}
-		m[availableCount] = m[availableCount].(int) + 1
+		ticketCount[ticket]++
+		cGraph.Add(ticket.src, ticket.dst)
 	}
-	//Find itinerary using all edges
-	numEdges := len(tickets)
+
 	var itinerary []string
 
 	// sort nodes to get lexical order in result
-	var nodeNames []string
-	for key := range cGraph.Nodes {
-		nodeNames = append(nodeNames, key)
-	}
-
-	sort.Strings(nodeNames)
-	for _, nodeName := range nodeNames {
-		node := cGraph.Nodes[nodeName]
-		itinerary = append(itinerary, node.Name)
-		if visitAll(node, numEdges, &itinerary) {
+	cities := cGraph.GetNodes().ToSlice()
+	sort.Strings(cities)
+	n := len(tickets)
+	for _, c := range cities {
+		itinerary = append(itinerary, c)
+		if visitAll(c, cGraph, 0, n, ticketCount, &itinerary) {
 			break
 		} else {
 			itinerary = itinerary[:len(itinerary)-1]
@@ -68,30 +58,28 @@ func testWithTickets(tickets [][]string) []string {
 	return itinerary
 }
 
-func visitAll(node *graph.Node, numEdges int, itinerary *[]string) bool {
-	if len(*itinerary) == numEdges+1 {
+func visitAll(c string, g graph.Graph[string], t, n int, ticketCount map[ticket]int, itinerary *[]string) bool {
+	if t == n {
 		return true
 	}
 
 	// sort targets to get lexical order in result
-	var edgeNames []string
-	for key := range node.EdgesOut {
-		edgeNames = append(edgeNames, key)
+	var ds []string
+	for n, _ := range g.Adjacencies(c) {
+		ds = append(ds, n)
 	}
+	sort.Strings(ds)
 
-	sort.Strings(edgeNames)
-	for _, edgeName := range edgeNames {
-		edge := node.EdgesOut[edgeName]
-		m := edge.Metadata
-		if m[availableCount].(int) > 0 {
-			m[availableCount] = m[availableCount].(int) - 1
-			target := edge.Target
-			*itinerary = append(*itinerary, target.Name)
-			if visitAll(target, numEdges, itinerary) {
+	for _, d := range ds {
+		tc := ticket{c, d}
+		if ticketCount[tc] > 0 {
+			ticketCount[tc]--
+			*itinerary = append(*itinerary, d)
+			if visitAll(d, g, t+1, n, ticketCount, itinerary) {
 				return true
 			} else {
-				// backtrack so it can be visited again
-				m[availableCount] = m[availableCount].(int) + 1
+				// backtrack so it can be chosen again
+				ticketCount[tc]++
 				*itinerary = (*itinerary)[:len(*itinerary)-1]
 			}
 		}
@@ -100,9 +88,6 @@ func visitAll(node *graph.Node, numEdges int, itinerary *[]string) bool {
 	return false
 }
 
-func createOrGetNewNode(cGraph graph.Interface, name string) *graph.Node {
-	if node, ok := cGraph.GetNodes()[name]; ok {
-		return node
-	}
-	return graph.NewNode(name, nil)
+type ticket struct {
+	src, dst string
 }
