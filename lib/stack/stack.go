@@ -1,53 +1,25 @@
 package stack
 
 // Interface implemented by stack, LIFO
-type Interface interface {
+type Stack[T any] interface {
 	// Push element to the stack
-	Push(x interface{})
+	Push(T)
 
 	// Pop element from the top of the stack
-	// If stack is empty, returns nil
-	Pop() interface{}
+	// If stack is empty, panics
+	Pop() T
 
 	// Peek check the value of top element
-	Peek() interface{}
+	// If stack is empty, panics
+	Peek() T
 
-	// IsEmpty returns true if stack is empty
+	// IsEmpty returns true if stack is empty, call before Pop and Peek
 	IsEmpty() bool
 
 	// Size returns number of elements in the stack
 	Size() int
 }
 
-// Implementation of stack.Interface
-type Stack struct {
-	elements []interface{}
-}
-
-func (st *Stack) Push(elem interface{}) {
-	st.elements = append(st.elements, elem)
-}
-
-func (st *Stack) Pop() interface{} {
-	if st.IsEmpty() {
-		return nil
-	}
-	elem := st.elements[len(st.elements)-1]
-	st.elements = st.elements[:len(st.elements)-1]
-	return elem
-}
-
-func (st *Stack) Peek() interface{} {
-	if st.IsEmpty() {
-		return nil
-	}
-	return st.elements[len(st.elements)-1]
-}
-
-func (st *Stack) IsEmpty() bool {
-	return st.Size() == 0
-}
-
-func (st *Stack) Size() int {
-	return len(st.elements)
+func NewStack[T any]() Stack[T] {
+	return &anyStack[T]{}
 }

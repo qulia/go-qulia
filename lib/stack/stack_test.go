@@ -8,21 +8,22 @@ import (
 )
 
 func TestStackBasic(t *testing.T) {
-	testStack := stack.Stack{}
-	verify(t, &testStack)
+	testStack := stack.NewStack[string]()
+	verify(t, testStack)
 }
 
-func verify(t *testing.T, stack stack.Interface) {
-	stack.Push(3)
-	stack.Push("strings")
-	stack.Push(false)
+func verify(t *testing.T, stack stack.Stack[string]) {
+	stack.Push("one")
+	stack.Push("two")
+	stack.Push("three")
 
-	assert.Equal(t, false, stack.Peek().(bool))
-	assert.Equal(t, false, stack.Pop().(bool))
-	assert.Equal(t, "strings", stack.Peek().(string))
-	assert.Equal(t, "strings", stack.Pop().(string))
-	assert.Equal(t, 3, stack.Peek().(int))
-	assert.Equal(t, 3, stack.Pop().(int))
-	assert.Nil(t, stack.Peek())
-	assert.Nil(t, stack.Pop())
+	assert.Equal(t, "three", stack.Peek())
+	assert.Equal(t, "three", stack.Pop())
+	assert.Equal(t, "two", stack.Peek())
+	assert.Equal(t, "two", stack.Pop())
+	assert.Equal(t, "one", stack.Peek())
+	assert.Equal(t, "one", stack.Pop())
+	assert.True(t, stack.IsEmpty())
+	assert.Panics(t, func() { stack.Peek() })
+	assert.Panics(t, func() { stack.Peek() })
 }

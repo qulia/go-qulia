@@ -1,7 +1,8 @@
 package unionfind
 
 // Ref: https://en.wikipedia.org/wiki/Disjoint-set_data_structure
-type UnionFind struct {
+
+type comparableUnionFind struct {
 	m     map[int]*node
 	count int
 }
@@ -13,8 +14,8 @@ type node struct {
 	size   int
 }
 
-func New(arr []int) *UnionFind {
-	unif := &UnionFind{}
+func New(arr []int) *comparableUnionFind {
+	unif := &comparableUnionFind{}
 	unif.m = map[int]*node{}
 	for _, val := range arr {
 		unif.Find(val)
@@ -23,11 +24,11 @@ func New(arr []int) *UnionFind {
 }
 
 // Number of groups
-func (unif UnionFind) Count() int {
+func (unif comparableUnionFind) Count() int {
 	return unif.count
 }
 
-func (unif *UnionFind) Find(v int) int {
+func (unif *comparableUnionFind) Find(v int) int {
 	n := unif.m[v]
 	if n == nil {
 		unif.m[v] = &node{v, 0, v, 1}
@@ -42,7 +43,7 @@ func (unif *UnionFind) Find(v int) int {
 	return n.parent
 }
 
-func (unif *UnionFind) Union(x, y int) {
+func (unif *comparableUnionFind) Union(x, y int) {
 	rootX := unif.Find(x)
 	rootY := unif.Find(y)
 
@@ -66,7 +67,7 @@ func (unif *UnionFind) Union(x, y int) {
 	unif.count--
 }
 
-func (unif *UnionFind) Size(x int) int {
+func (unif *comparableUnionFind) Size(x int) int {
 	node := unif.m[unif.Find(x)]
 	if node == nil {
 		return 0
