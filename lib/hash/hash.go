@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func Sha1(input interface{}) string {
+func Sha1(input any) string {
 	buf, _ := json.Marshal(input)
 	h := sha1.New()
 	h.Write(buf)
