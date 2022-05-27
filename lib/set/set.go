@@ -84,9 +84,9 @@ type SetFlex[T lib.Keyable[K], K comparable] interface {
 }
 
 func NewSetFlex[T lib.Keyable[K], K comparable]() SetFlex[T, K] {
-	return newkeyableSet[T, K]()
+	return newFlexImpl[T, K]()
 }
 
 func NewSet[T comparable]() Set[T] {
-	return newComparableSet[T]()
+	return newSetImpl[T]()
 }

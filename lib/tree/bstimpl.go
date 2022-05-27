@@ -2,15 +2,19 @@ package tree
 
 import "golang.org/x/exp/constraints"
 
-type bstOrdered[T constraints.Ordered] struct {
+type bstImpl[T constraints.Ordered] struct {
 	root *Node[T]
 }
 
-func (bst *bstOrdered[T]) Search(elem T) *Node[T] {
+func newBSTImpl[T constraints.Ordered]() *bstImpl[T] {
+	return &bstImpl[T]{}
+}
+
+func (bst *bstImpl[T]) Search(elem T) *Node[T] {
 	return bst.search(bst.root, elem)
 }
 
-func (bst *bstOrdered[T]) search(root *Node[T], elem T) *Node[T] {
+func (bst *bstImpl[T]) search(root *Node[T], elem T) *Node[T] {
 	if root == nil {
 		return nil
 	}
@@ -26,7 +30,7 @@ func (bst *bstOrdered[T]) search(root *Node[T], elem T) *Node[T] {
 	return bst.search(root.Right, elem)
 }
 
-func (bst *bstOrdered[T]) ToSlice() []T {
+func (bst *bstImpl[T]) ToSlice() []T {
 	var res []T
 	bst.Traverse(func(elem T) {
 		res = append(res, elem)
@@ -35,15 +39,15 @@ func (bst *bstOrdered[T]) ToSlice() []T {
 	return res
 }
 
-func (bst *bstOrdered[T]) Traverse(call func(T)) {
+func (bst *bstImpl[T]) Traverse(call func(T)) {
 	VisitInOrder(bst.root, call)
 }
 
-func (bst *bstOrdered[T]) Insert(elem T) *Node[T] {
+func (bst *bstImpl[T]) Insert(elem T) *Node[T] {
 	return bst.insert(&bst.root, elem)
 }
 
-func (bst *bstOrdered[T]) insert(root **Node[T], elem T) *Node[T] {
+func (bst *bstImpl[T]) insert(root **Node[T], elem T) *Node[T] {
 	if *root == nil {
 		*root = NewNode(elem)
 	} else if elem < (*root).Data {
@@ -55,11 +59,11 @@ func (bst *bstOrdered[T]) insert(root **Node[T], elem T) *Node[T] {
 	return *root
 }
 
-func (bst *bstOrdered[T]) Floor(elem T) *Node[T] {
+func (bst *bstImpl[T]) Floor(elem T) *Node[T] {
 	return bst.floor(elem, bst.root)
 }
 
-func (bst *bstOrdered[T]) floor(elem T, root *Node[T]) *Node[T] {
+func (bst *bstImpl[T]) floor(elem T, root *Node[T]) *Node[T] {
 	// if we reach to the leaf and value does not match, not found
 	if root == nil {
 		return nil
@@ -81,11 +85,11 @@ func (bst *bstOrdered[T]) floor(elem T, root *Node[T]) *Node[T] {
 	}
 }
 
-func (bst *bstOrdered[T]) Ceiling(elem T) *Node[T] {
+func (bst *bstImpl[T]) Ceiling(elem T) *Node[T] {
 	return bst.ceiling(elem, bst.root)
 }
 
-func (bst *bstOrdered[T]) ceiling(elem T, root *Node[T]) *Node[T] {
+func (bst *bstImpl[T]) ceiling(elem T, root *Node[T]) *Node[T] {
 	// if we reach to the leaf and value does not match, not found
 	if root == nil {
 		return nil

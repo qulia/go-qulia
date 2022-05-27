@@ -22,5 +22,5 @@ type Graph[T comparable] interface {
 }
 
 func NewGraph[T comparable]() Graph[T] {
-	return &graphComparable[T]{map[T]map[T]bool{}, set.NewSet[T]()}
+	return newGraphImpl[T]()
 }

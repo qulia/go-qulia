@@ -23,6 +23,6 @@ type Trie interface {
 	Contains(word string) bool
 }
 
-func NewTrie() *stringTrie {
-	return newStringTrie()
+func NewTrie() Trie {
+	return newTrieImpl()
 }

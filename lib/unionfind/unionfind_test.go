@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnionFind(t *testing.T) {
-	unifTest := New([]int{1, 2, 3, 4, 5, 6, 7})
+	unifTest := NewUnionFind([]int{1, 2, 3, 4, 5, 6, 7})
 	assert.Equal(t, unifTest.Count(), 7)
 	unifTest.Union(1, 2)
 	assert.Equal(t, unifTest.Count(), 6)
@@ -28,4 +28,9 @@ func TestUnionFind(t *testing.T) {
 
 	assert.Equal(t, 3, unifTest.Size(2)) // 1,2,7
 	assert.Equal(t, 4, unifTest.Size(6)) //3,4,5,6
+	assert.Equal(t, 0, unifTest.Size(8))
+
+	unifTest.Union(8, 4) //3,4,5,6,8
+
+	assert.Equal(t, 5, unifTest.Size(8))
 }

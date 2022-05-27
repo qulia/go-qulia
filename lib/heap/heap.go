@@ -45,7 +45,7 @@ type HeapFlex[T lib.Lesser[T]] interface {
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
 func NewMinHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
-	return newFlex(input, false)
+	return newFlexImpl(input, false)
 }
 
 // NewMaxHeapFlex initializes the heap structure from provided slice
@@ -55,7 +55,7 @@ func NewMinHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
 func NewMaxHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
-	return newFlex(input, true)
+	return newFlexImpl(input, true)
 }
 
 // NewMinHeap initializes the heap structure from provided slice
@@ -65,7 +65,7 @@ func NewMaxHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
 func NewMinHeap[T constraints.Ordered](input []T) Heap[T] {
-	return newOrdered(input, false)
+	return newImpl(input, false)
 }
 
 // NewMaxHeap initializes the heap structure from provided slice
@@ -75,5 +75,5 @@ func NewMinHeap[T constraints.Ordered](input []T) Heap[T] {
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
 func NewMaxHeap[T constraints.Ordered](input []T) Heap[T] {
-	return newOrdered(input, true)
+	return newImpl(input, true)
 }
