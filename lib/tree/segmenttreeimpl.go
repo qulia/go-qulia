@@ -2,17 +2,22 @@ package tree
 
 import "golang.org/x/exp/constraints"
 
-type orderedSegmentTree[T constraints.Ordered] struct {
+type segmentTreeImpl[T constraints.Ordered] struct {
 	aggFunc   AggregateFunc[T] // aggregate func for range
 	identiyEl T                // identity element for aggregate func. e.g. agg: sum, identiy: 0
 	root      *segmentTreeNode[T]
 }
 
-func (st orderedSegmentTree[T]) UpdateRange(start, end int, updateFunc UpdateFunc[T]) {
+func newSegmentTreeImpl[T constraints.Ordered](aggFunc AggregateFunc[T], identityEl T) *segmentTreeImpl[T] {
+	st := segmentTreeImpl[T]{aggFunc, identityEl, &segmentTreeNode[T]{r: rng{0, 1e9}}}
+	return &st
+}
+
+func (st segmentTreeImpl[T]) UpdateRange(start, end int, updateFunc UpdateFunc[T]) {
 	st.root.updateRange(rng{start, end}, updateFunc, st.aggFunc)
 }
 
-func (st orderedSegmentTree[T]) QueryRange(start, end int) T {
+func (st segmentTreeImpl[T]) QueryRange(start, end int) T {
 	return st.root.queryRange(rng{start, end}, st.aggFunc, st.identiyEl)
 }
 

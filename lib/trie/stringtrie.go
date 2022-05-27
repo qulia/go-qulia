@@ -10,21 +10,21 @@ type node struct {
 	words set.Set[string]
 }
 
-type stringTrie struct {
+type trieImpl struct {
 	root *node
 }
 
-func newStringTrie() *stringTrie {
-	return &stringTrie{
+func newTrieImpl() *trieImpl {
+	return &trieImpl{
 		root: createRootNode(),
 	}
 }
 
-func (t *stringTrie) Insert(word string) {
+func (t *trieImpl) Insert(word string) {
 	t.root.insert(word, 0)
 }
 
-func (t *stringTrie) Search(prefix string) set.Set[string] {
+func (t *trieImpl) Search(prefix string) set.Set[string] {
 	if foundAt, ok := t.root.search(prefix, 0); ok {
 		return foundAt.words
 	}
@@ -32,7 +32,7 @@ func (t *stringTrie) Search(prefix string) set.Set[string] {
 	return nil
 }
 
-func (t *stringTrie) Contains(word string) bool {
+func (t *trieImpl) Contains(word string) bool {
 	if foundAt, ok := t.root.search(word, 0); ok {
 		if foundAt.hasTerminate() {
 			return true

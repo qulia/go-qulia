@@ -21,5 +21,5 @@ type Stack[T any] interface {
 }
 
 func NewStack[T any]() Stack[T] {
-	return &anyStack[T]{}
+	return newStackImpl[T]()
 }

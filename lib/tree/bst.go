@@ -26,6 +26,6 @@ type BST[T constraints.Ordered] interface {
 	Ceiling(T) *Node[T]
 }
 
-func NewBST[T constraints.Ordered]() *bstOrdered[T] {
-	return &bstOrdered[T]{}
+func NewBST[T constraints.Ordered]() BST[T] {
+	return newBSTImpl[T]()
 }

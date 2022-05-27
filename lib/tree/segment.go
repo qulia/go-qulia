@@ -7,9 +7,8 @@ type SegmentTree[T constraints.Ordered] interface {
 	QueryRange(start, end int) T
 }
 
-func NewSegmentTree[T constraints.Ordered](aggFunc AggregateFunc[T], identityEl T) *orderedSegmentTree[T] {
-	st := orderedSegmentTree[T]{aggFunc, identityEl, &segmentTreeNode[T]{r: rng{0, 1e9}}}
-	return &st
+func NewSegmentTree[T constraints.Ordered](aggFunc AggregateFunc[T], identityEl T) *segmentTreeImpl[T] {
+	return newSegmentTreeImpl(aggFunc, identityEl)
 }
 
 type AggregateFunc[T constraints.Ordered] func(a, b T) T
