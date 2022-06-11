@@ -22,8 +22,6 @@ func TestGraphBasic(t *testing.T) {
 	assert.True(t, testGraph.Adjacencies("node3")["node4"])
 	assert.True(t, testGraph.Adjacencies("node4")["node3"])
 
-	if generateViz { // set true in config_test.go to generate the viz
-		// Generage graph
-		dotToImageGraphviz("TestGraphBasic", "svg", []byte(GraphToDot(testGraph)))
-	}
+	// Generage graph if dot exists
+	_, _ = dotToImageGraphviz("TestGraphBasic", "svg", []byte(graphToDot(testGraph)))
 }
