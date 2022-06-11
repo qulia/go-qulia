@@ -2,8 +2,8 @@ package graph_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
 
@@ -14,12 +14,12 @@ var dotExe string
 
 func dotToImageGraphviz(fileName string, format string, dot []byte) (string, error) {
 	if fileName == "" {
-		log.Fatal("Provide fileName for the image")
+		return "", errors.New("empty file name")
 	}
 	if dotExe == "" {
 		dot, err := exec.LookPath("dot")
 		if err != nil {
-			log.Fatalln("unable to find program 'dot', please install it or check your PATH")
+			return "", err
 		}
 		dotExe = dot
 	}
@@ -30,13 +30,13 @@ func dotToImageGraphviz(fileName string, format string, dot []byte) (string, err
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("command '%v': %v\n%v", cmd, err, stderr.String())
+		return "", err
 	}
 	return img, nil
 }
 
 // Return Dot string of the graph, can be used with Graphviz(https://graphviz.org/) to visualize
-func GraphToDot[T comparable](g graph.Graph[T]) string {
+func graphToDot[T comparable](g graph.Graph[T]) string {
 	sb := strings.Builder{}
 
 	sb.WriteString(`strict digraph {`)
