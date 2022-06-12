@@ -3,27 +3,23 @@ package set
 import "github.com/qulia/go-qulia/lib"
 
 type setImpl[T comparable] struct {
-	ks *flexImpl[lib.DefaultKeyable[T], T]
+	*flexImpl[lib.DefaultKeyable[T], T]
 }
 
 func newSetImpl[T comparable]() *setImpl[T] {
-	return &setImpl[T]{ks: newFlexImpl[lib.DefaultKeyable[T], T]()}
-}
-
-func (s *setImpl[T]) Len() int {
-	return s.ks.Len()
+	return &setImpl[T]{newFlexImpl[lib.DefaultKeyable[T], T]()}
 }
 
 func (s *setImpl[T]) Add(elem T) {
-	s.ks.Add(lib.DefaultKeyable[T]{Val: elem})
+	s.flexImpl.Add(lib.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Remove(elem T) {
-	s.ks.Remove(lib.DefaultKeyable[T]{Val: elem})
+	s.flexImpl.Remove(lib.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Contains(elem T) bool {
-	return s.ks.Contains(lib.DefaultKeyable[T]{Val: elem})
+	return s.flexImpl.Contains(lib.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Union(other Set[T]) Set[T] {
@@ -36,7 +32,7 @@ func (s *setImpl[T]) Union(other Set[T]) Set[T] {
 
 func (s *setImpl[T]) Intersection(other Set[T]) Set[T] {
 	intersectionSet := newSetImpl[T]()
-	for _, elem := range s.ks.entries {
+	for _, elem := range s.flexImpl.entries {
 		if other.Contains(elem.Key()) {
 			intersectionSet.Add(elem.Key())
 		}
@@ -54,7 +50,7 @@ func (s *setImpl[T]) IsSupersetOf(other Set[T]) bool {
 }
 
 func (s *setImpl[T]) Keys() []T {
-	return s.ks.Keys()
+	return s.flexImpl.Keys()
 }
 
 func (s *setImpl[T]) FromSlice(input []T) Set[T] {
@@ -67,7 +63,7 @@ func (s *setImpl[T]) FromSlice(input []T) Set[T] {
 
 func (s *setImpl[T]) ToSlice() []T {
 	var res []T
-	for _, elem := range s.ks.entries {
+	for _, elem := range s.flexImpl.entries {
 		res = append(res, elem.Key())
 	}
 
@@ -75,7 +71,7 @@ func (s *setImpl[T]) ToSlice() []T {
 }
 
 func (s *setImpl[T]) CopyTo(other Set[T]) {
-	for _, elem := range s.ks.entries {
+	for _, elem := range s.flexImpl.entries {
 		other.Add(elem.Key())
 	}
 }
