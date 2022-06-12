@@ -1,25 +1,23 @@
 package heap
 
 import (
-	"sort"
-
 	"github.com/qulia/go-qulia/lib"
 )
 
 // Heap that allows custom comparison for the entries while maintaining heap properties
 // The contained type T should implment <lib.Leed
-type fleximpl[T lib.Lesser[T]] struct {
+type fleximpl[T lib.Comparer[T]] struct {
 	maxOnTop bool
 	buffer   []T
 }
 
-func newFlexImpl[T lib.Lesser[T]](input []T, maxOnTop bool) *fleximpl[T] {
+func newFlexImpl[T lib.Comparer[T]](input []T, maxOnTop bool) *fleximpl[T] {
 	buffer := make([]T, len(input))
 	copy(buffer, input)
 	return initHeap(buffer, maxOnTop)
 }
 
-func initHeap[T lib.Lesser[T]](buffer []T, maxOnTop bool) *fleximpl[T] {
+func initHeap[T lib.Comparer[T]](buffer []T, maxOnTop bool) *fleximpl[T] {
 	h := fleximpl[T]{buffer: buffer, maxOnTop: maxOnTop}
 	h.heapify()
 	return &h
@@ -50,43 +48,87 @@ func (h fleximpl[T]) Size() int {
 }
 
 func (h *fleximpl[T]) siftUp(index int) {
-	// If we are already at the root, nothing to do
-	if index == 0 {
-		return
-	}
+	for {
+		// If we are already at the root, nothing to do
+		if index == 0 {
+			return
+		}
 
-	current := index
-	parent := (current - 1) / 2
+		current := index
+		parent := (current - 1) / 2
 
-	if top := h.getTop([]int{current, parent}); top != parent {
+		top, equal := h.findTop(current, parent)
+		if equal || top == parent {
+			return
+		}
+
 		h.swap(top, parent)
-		h.siftUp(parent)
+		index = parent
 	}
 }
 
 func (h *fleximpl[T]) siftDown(index int) {
-	// If at the leaf, done
-	if index >= h.Size()/2 {
-		return
-	}
+	for { // If at the leaf, done
+		if index >= h.Size()/2 {
+			return
+		}
 
-	parent := index
-	left := 2*index + 1
-	right := 2*index + 2
+		parent := index
+		left := 2*index + 1
+		right := 2*index + 2
 
-	comps := []int{parent, left}
-	if right < h.Size() {
-		comps = append(comps, right)
-	}
+		top, equal := h.findTop(left, right)
+		if equal {
+			top, equal = h.findTop(parent, left)
+			if equal {
+				return
+			}
+		} else {
+			top, equal = h.findTop(parent, top)
+			if equal {
+				return
+			}
+		}
 
-	if top := h.getTop(comps); top != parent {
+		if top == parent {
+			return
+		}
 		h.swap(top, parent)
-		h.siftDown(top)
+		index = top
 	}
 }
 
+func (h *fleximpl[T]) findTop(first int, second int) (int, bool) {
+	if first >= h.Size() {
+		return second, false
+	}
+
+	if second >= h.Size() {
+		return first, false
+	}
+
+	var top int
+	multiplier := 1
+	if !h.maxOnTop {
+		multiplier = -1
+	}
+
+	comp := h.buffer[first].Compare(h.buffer[second]) * multiplier
+	if comp > 0 {
+		top = first
+	} else if comp < 0 {
+		top = second
+	} else {
+		// Equal
+		return -1, true
+	}
+	return top, false
+}
+
 func (h *fleximpl[T]) swap(i, j int) {
-	h.buffer[i], h.buffer[j] = h.buffer[j], h.buffer[i]
+	tmp := h.buffer[i]
+	h.buffer[i] = h.buffer[j]
+	h.buffer[j] = tmp
 }
 
 func (h *fleximpl[T]) heapify() {
@@ -99,21 +141,5 @@ func (h *fleximpl[T]) heapify() {
 	// Leaf nodes start at n/2 goes to n-1
 	for i := h.Size()/2 - 1; i >= 0; i-- {
 		h.siftDown(i)
-	}
-}
-
-func (h *fleximpl[T]) getTop(indices []int) int {
-	sort.Slice(indices, func(i, j int) bool {
-		return h.less(h.buffer[indices[i]], h.buffer[indices[j]])
-	})
-	return indices[len(indices)-1]
-}
-
-func (h *fleximpl[T]) less(one, other T) bool {
-	if h.maxOnTop {
-		return one.Less(other)
-	} else {
-		// reverse comp
-		return other.Less(one)
 	}
 }

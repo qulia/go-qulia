@@ -4,16 +4,23 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type Lesser[T any] interface {
-	Less(T) bool
+// Return negative if less, positive if greater, 0 if equal
+type Comparer[T any] interface {
+	Compare(T) int
 }
 
-type DefaultLesser[T constraints.Ordered] struct {
+type DefaultComparer[T constraints.Ordered] struct {
 	Val T
 }
 
-func (dc DefaultLesser[T]) Less(other DefaultLesser[T]) bool {
-	return dc.Val < other.Val
+func (dc DefaultComparer[T]) Compare(other DefaultComparer[T]) int {
+	if dc.Val < other.Val {
+		return -1
+	} else if dc.Val > other.Val {
+		return 1
+	}
+
+	return 0
 }
 
 type Keyable[K comparable] interface {
