@@ -35,40 +35,20 @@ func ExampleHeap() {
 }
 
 // This example initializes the heap with list of jobs and pushes another one with Insert method
-// With the provided comparison method Less on the type implementing lib.Lesser[T]
+// With the provided comparison method Less on the type implementing lib.Comparer[T]
 // depending on the heap type (min/max) the jobs will be extracted in order
 func ExampleHeapFlex() {
 	jobs := []job{
-		{
-			priority:   4,
-			name:       "JobA",
-			department: "DeptA",
-		},
-		{
-			priority:   1,
-			name:       "JobB",
-			department: "DeptA",
-		},
-		{
-			priority:   0,
-			name:       "JobZ",
-			department: "DeptC",
-		},
-		{
-			priority:   7,
-			name:       "JobH",
-			department: "DeptA",
-		},
+		{priority: 4, name: "JobA", department: "DeptA"},
+		{priority: 1, name: "JobB", department: "DeptA"},
+		{priority: 0, name: "JobZ", department: "DeptC"},
+		{priority: 7, name: "JobH", department: "DeptA"},
 	}
 
 	jobMinHeap := heap.NewMinHeapFlex(jobs) // HeapFlex[job]
 	jobMaxHeap := heap.NewMaxHeapFlex(jobs) // HeapFlex[job]
 
-	fj := job{
-		priority:   5,
-		name:       "JobJ",
-		department: "DeptX",
-	}
+	fj := job{priority: 5, name: "JobJ", department: "DeptX"}
 	jobMinHeap.Insert(fj)
 	jobMaxHeap.Insert(fj)
 

@@ -22,7 +22,7 @@ type Heap[T constraints.Ordered] interface {
 	IsEmpty() bool
 }
 
-// Heap content of any type should implement lib.Lesser interface
+// Heap content of any type should implement lib.Comparer interface
 type HeapFlex[T lib.Comparer[T]] interface {
 	// Insert element to the heap
 	Insert(T)
@@ -40,7 +40,7 @@ type HeapFlex[T lib.Comparer[T]] interface {
 
 // NewMinHeapFlex initializes the heap structure from provided slice
 // returned heap implements min heap properties where min value defined by
-// lib.Lesser implementation of the type is at the top of the heap to be extracted first
+// lib.Comparer implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
@@ -48,9 +48,9 @@ func NewMinHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, false)
 }
 
-// NewMaxHeapFlex initializes the heap structure from provided slice
+// NewMaxHeapFlex initializes the heap structure from provided slice.
 // returned heap implements max heap properties where max value defined by
-// lib.Lesser implementation of the type is at the top of the heap to be extracted first
+// lib.Comparer implementation of the type is at the top of the heap to be extracted first
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
@@ -58,9 +58,9 @@ func NewMaxHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, true)
 }
 
-// NewMinHeap initializes the heap structure from provided slice
-// returned heap implements min heap properties where min value defined by
-// < operator result of the type is at the top of the heap to be extracted first
+// NewMinHeap initializes the heap structure from provided slice.
+// Returned heap implements heap properties using <, > operators
+// of type with constraints.Ordered
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
@@ -68,9 +68,9 @@ func NewMinHeap[T constraints.Ordered](input []T) Heap[T] {
 	return newImpl(input, false)
 }
 
-// NewMaxHeap initializes the heap structure from provided slice
-// returned heap implements max heap properties where max value defined by
-// < operator result of the type is at the top of the heap to be extracted first
+// NewMaxHeap initializes the heap structure from provided slice.
+// Returned heap implements heap properties using <, > operators
+// of type with constraints.Ordered
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
