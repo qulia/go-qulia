@@ -23,7 +23,7 @@ type Heap[T constraints.Ordered] interface {
 }
 
 // Heap content of any type should implement lib.Lesser interface
-type HeapFlex[T lib.Lesser[T]] interface {
+type HeapFlex[T lib.Comparer[T]] interface {
 	// Insert element to the heap
 	Insert(T)
 
@@ -44,7 +44,7 @@ type HeapFlex[T lib.Lesser[T]] interface {
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
-func NewMinHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
+func NewMinHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, false)
 }
 
@@ -54,7 +54,7 @@ func NewMinHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
-func NewMaxHeapFlex[T lib.Lesser[T]](input []T) HeapFlex[T] {
+func NewMaxHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, true)
 }
 
