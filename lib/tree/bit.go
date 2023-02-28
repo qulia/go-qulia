@@ -1,8 +1,8 @@
 package tree
 
 type BinaryIndexTreeInterface interface {
-	// add "val" at index "x"
-	// 0 indexed bounded by the size of the index tree
+	// set value at index x
+	// 0 indexed, bounded by the size of the index tree
 	Update(x, val int)
 
 	// returns the sum of elements up to and including index x
@@ -14,9 +14,11 @@ type BinaryIndexTree struct {
 }
 
 func (bit BinaryIndexTree) Update(x, val int) {
+	cur := bit.Sum(x) - bit.Sum(x-1)
+	diff := val - cur
 	x += 1
 	for ; x > 0 && x < len(bit.buf); x += x & -x {
-		bit.buf[x] += val
+		bit.buf[x] += diff
 	}
 }
 
