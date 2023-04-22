@@ -1,24 +1,25 @@
-package fixedwindowcounter_test
+package slidingwindowlog_test
 
 import (
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/ratelimiter/fixedwindowcounter"
+	"github.com/qulia/go-qulia/ratelimiter/slidingwindowlog"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFixedWindowCounter(t *testing.T) {
-	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Second*2)
-	time.Sleep(time.Second * 5)
-	assert.True(t, fwc.Put())
-	assert.True(t, fwc.Put())
-	fwc.Close()
+func TestSlidingWindowLogBasic(t *testing.T) {
+	swl := slidingwindowlog.NewSlidingWindowLog(4, time.Second)
+	assert.True(t, swl.Put())
+	assert.True(t, swl.Put())
+
+	swl = slidingwindowlog.NewSlidingWindowLog(0, time.Second)
+	assert.False(t, swl.Put())
 }
 
-func TestFixedWindowCounterParallelRequestors(t *testing.T) {
-	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Second)
+func TestSlidingWindowLogParallelRequestors(t *testing.T) {
+	swl := slidingwindowlog.NewSlidingWindowLog(3, time.Second)
 
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 10; i++ {
@@ -32,7 +33,7 @@ func TestFixedWindowCounterParallelRequestors(t *testing.T) {
 			for {
 				select {
 				case <-tc.C:
-					if fwc.Put() {
+					if swl.Put() {
 						t.Logf("allowed %d", i)
 					} else {
 						t.Logf("not allowed %d", i)
@@ -46,5 +47,5 @@ func TestFixedWindowCounterParallelRequestors(t *testing.T) {
 	}
 
 	wg.Wait()
-	fwc.Close()
+	swl.Close()
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type leakyBucketImpl[T any] struct {
-	capacity   uint32
+	capacity   int
 	qAccessor  *access.Unique[queue.Queue[T]]
 	leakBucket tokenbucket.TokenBucket
 }
@@ -44,10 +44,9 @@ func (lb *leakyBucketImpl[T]) Take() (T, bool) {
 	return *new(T), false
 }
 
-func newLeakyBucketImpl[T any](capacity uint32, leakAmount uint32, leakPeriod time.Duration) *leakyBucketImpl[T] {
+func newLeakyBucketImpl[T any](capacity int, leakAmount int, leakPeriod time.Duration) *leakyBucketImpl[T] {
 	q := queue.NewQueue[T]()
 	qAccessor := access.NewUnique(q)
-	qAccessor.Release()
 	return &leakyBucketImpl[T]{
 		capacity:   capacity,
 		qAccessor:  qAccessor,

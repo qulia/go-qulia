@@ -9,6 +9,6 @@ type FixedWindowCounter interface {
 	Close()
 }
 
-func NewFixedWindowCounter(threshold uint32, window time.Duration) FixedWindowCounter {
+func NewFixedWindowCounter(threshold int, window time.Duration) FixedWindowCounter {
 	return newFixedWindowCounterImpl(threshold, window)
 }

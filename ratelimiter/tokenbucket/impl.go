@@ -7,13 +7,13 @@ import (
 )
 
 type tokenBucketImpl struct {
-	capacity   uint32
-	fillAmount uint32
+	capacity   int
+	fillAmount int
 
-	tokens uint32
+	tokens int
 	ticker *time.Ticker
 
-	tokensAccessor *access.Unique[*uint32]
+	tokensAccessor *access.Unique[*int]
 }
 
 // Close implements TokenBucket
@@ -50,7 +50,7 @@ func (tb *tokenBucketImpl) filler() {
 	}
 }
 
-func newTokenBucketImpl(capacity uint32, fillAmount uint32, fillPeriod time.Duration) *tokenBucketImpl {
+func newTokenBucketImpl(capacity int, fillAmount int, fillPeriod time.Duration) *tokenBucketImpl {
 	if fillAmount > capacity {
 		panic("fillAmount is larger than the capacity")
 	}
@@ -63,6 +63,5 @@ func newTokenBucketImpl(capacity uint32, fillAmount uint32, fillPeriod time.Dura
 
 	go tb.filler()
 	tb.tokensAccessor = access.NewUnique(&tb.tokens)
-	tb.tokensAccessor.Release()
 	return tb
 }

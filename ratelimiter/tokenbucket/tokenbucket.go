@@ -7,6 +7,6 @@ type TokenBucket interface {
 	Close()
 }
 
-func NewTokenBucket(capacity uint32, fillAmount uint32, fillPeriod time.Duration) TokenBucket {
+func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) TokenBucket {
 	return newTokenBucketImpl(capacity, fillAmount, fillPeriod)
 }

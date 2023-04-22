@@ -20,7 +20,10 @@ func (fwc *fixedWindowCounterImpl) Put() bool {
 	return fwc.tb.Take()
 }
 
-func newFixedWindowCounterImpl(threshold uint32, window time.Duration) *fixedWindowCounterImpl {
+// TokenBucket with the provided window is the window "divider"
+// Allowed threshold defined number of tokens per slot
+// Windows not necessarily start at :00
+func newFixedWindowCounterImpl(threshold int, window time.Duration) *fixedWindowCounterImpl {
 	return &fixedWindowCounterImpl{
 		tb: tokenbucket.NewTokenBucket(threshold, threshold, window),
 	}

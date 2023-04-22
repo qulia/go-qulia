@@ -11,7 +11,8 @@ func NewUnique[T any](obj T) *Unique[T] {
 		obj: obj,
 		ch:  make(chan T, 1),
 	}
-
+	// initially make it available
+	u.Release()
 	return &u
 }
 
