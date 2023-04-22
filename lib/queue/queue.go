@@ -9,6 +9,9 @@ type Queue[T any] interface {
 	// If queue is empty, it panics
 	Dequeue() T
 
+	// Returns the value of the front of the queue
+	Peek() T
+
 	// IsEmpty returns true if queue is empty
 	IsEmpty() bool
 

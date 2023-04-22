@@ -19,7 +19,6 @@ type job struct {
 func TestUniqueBasic(t *testing.T) {
 	// Create a queue can be accessed exclusively only by one go routine
 	key := access.NewUnique(queue.NewQueue[job]())
-	key.Release()
 	receiveTimeout := 5 * time.Second
 	runSenders(key)
 

@@ -19,6 +19,10 @@ func (q *queueImpl[T]) Dequeue() T {
 	return elem
 }
 
+func (q *queueImpl[T]) Peek() T {
+	return q.elements[0]
+}
+
 func (q *queueImpl[T]) IsEmpty() bool {
 	return q.Length() == 0
 }

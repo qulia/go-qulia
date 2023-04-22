@@ -8,6 +8,6 @@ type LeakyBucket[T any] interface {
 	Close()
 }
 
-func NewLeakyBucket[T any](capacity uint32, leakAmount uint32, leakPeriod time.Duration) LeakyBucket[T] {
+func NewLeakyBucket[T any](capacity int, leakAmount int, leakPeriod time.Duration) LeakyBucket[T] {
 	return newLeakyBucketImpl[T](capacity, leakAmount, leakPeriod)
 }
