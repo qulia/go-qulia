@@ -1,6 +1,7 @@
 package tokenbucket
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/qulia/go-qulia/concurrency/access"
@@ -46,6 +47,7 @@ func (tb *tokenBucketImpl) filler() {
 			*cur = tb.capacity
 		}
 
+		fmt.Printf("refilled")
 		tb.tokensAccessor.Release()
 	}
 }
