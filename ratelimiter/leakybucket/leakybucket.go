@@ -9,7 +9,7 @@ import (
 	"github.com/qulia/go-qulia/ratelimiter/tokenbucket"
 )
 
-func NewLeakyBucket[T any](capacity int, leakAmount int, leakPeriod time.Duration) ratelimiter.RateLimiterBuffered {
+func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) ratelimiter.RateLimiterBuffered {
 	q := queue.NewQueue[chan<- interface{}]()
 	qAccessor := access.NewUnique(q)
 	return &leakBucket{
