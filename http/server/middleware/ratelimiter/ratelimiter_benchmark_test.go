@@ -25,6 +25,15 @@ var benchMap = map[string]func(*http.ServeMux, <-chan interface{}) http.Handler{
 	"LeakyBucket": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
 		return ratelimiter.LeakyBucket(ratePerSecond*2, ratePerSecond, time.Second, mux, doneCh)
 	},
+	"FixedWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
+		return ratelimiter.FixedWindowCounter(ratePerSecond, time.Second, mux, doneCh)
+	},
+	"SlidingWindowLog": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
+		return ratelimiter.SlidingWindowLog(ratePerSecond, time.Second, mux, doneCh)
+	},
+	"SlidingWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
+		return ratelimiter.SlidingWindowCounter(ratePerSecond, time.Second, mux, doneCh)
+	},
 }
 
 func BenchmarkRateLimit(b *testing.B) {
