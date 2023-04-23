@@ -3,7 +3,7 @@ package slidingwindowcounter
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/concurrency/access"
+	access "github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/lib/queue"
 	"github.com/qulia/go-qulia/ratelimiter"
 )
