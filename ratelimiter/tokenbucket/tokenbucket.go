@@ -3,7 +3,7 @@ package tokenbucket
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/concurrency/access"
+	access "github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/ratelimiter"
 )
 
@@ -41,12 +41,16 @@ func (tb *tockenBucket) Close() {
 // Take implements TokenBucket
 func (tb *tockenBucket) Allow() bool {
 	_, ok := tb.tokensAccessor.Acquire()
-	defer tb.tokensAccessor.Release()
-	tb.fill()
-	if !ok || tb.tokens == 0 {
+	if !ok {
 		return false
 	}
 
+	defer tb.tokensAccessor.Release()
+
+	tb.fill()
+	if tb.tokens == 0 {
+		return false
+	}
 	tb.tokens--
 	return true
 }
