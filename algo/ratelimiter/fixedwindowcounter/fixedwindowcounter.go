@@ -3,8 +3,8 @@ package fixedwindowcounter
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/ratelimiter"
-	"github.com/qulia/go-qulia/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
 )
 
 func NewFixedWindowCounter(threshold int, window time.Duration) ratelimiter.RateLimiter {

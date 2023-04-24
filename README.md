@@ -5,7 +5,7 @@
 
 Go data structures, helpers library
 
-Data Structues
+# Data Structues
 
 - [Graph](lib/graph)
 - [Heap](lib/heap/)
@@ -17,9 +17,20 @@ Data Structues
 - [Trie](lib/trie)
 - [UnionFind](lib/unionfind/)
 
-Concurrency
+# Algo
 
-- [Unique](concurrency/access/)
+- RateLimiter
+  - [TokenBucket](algo/ratelimiter/tokenbucket/)
+  - [LeakyBucket](algo/ratelimiter/leakybucket/)
+  - [FixedWindowCounter](algo/ratelimiter/fixedwindowcounter/)
+  - [SlidingWindowLog](algo/ratelimiter/slidingwindowlog/)
+  - [SlidingWindowCounter](algo/ratelimiter/slidingwindowcounter/)
+
+# Concurrency
+
+- [Unique](concurrency/unique/)
+
+---
 
 ---
 

@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qulia/go-qulia/ratelimiter"
-	"github.com/qulia/go-qulia/ratelimiter/fixedwindowcounter"
-	"github.com/qulia/go-qulia/ratelimiter/leakybucket"
-	"github.com/qulia/go-qulia/ratelimiter/slidingwindowcounter"
-	"github.com/qulia/go-qulia/ratelimiter/slidingwindowlog"
-	"github.com/qulia/go-qulia/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/algo/ratelimiter/fixedwindowcounter"
+	"github.com/qulia/go-qulia/algo/ratelimiter/leakybucket"
+	"github.com/qulia/go-qulia/algo/ratelimiter/slidingwindowcounter"
+	"github.com/qulia/go-qulia/algo/ratelimiter/slidingwindowlog"
+	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
 )
 
 func TokenBucket(capacity int, fillAmount int, fillPeriod time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {

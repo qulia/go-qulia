@@ -4,9 +4,9 @@ import (
 	"math"
 	"time"
 
-	access "github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/lib/queue"
-	"github.com/qulia/go-qulia/ratelimiter"
 )
 
 // Window duration is determined by the lookback
@@ -20,7 +20,7 @@ func NewSlidingWindowCounter(threshold int, window time.Duration) ratelimiter.Ra
 		threshold: threshold,
 		window:    window,
 		wm:        make(map[int]int),
-		qAccessor: access.NewUnique(queue.NewQueue[time.Time]()),
+		qAccessor: unique.NewUnique(queue.NewQueue[time.Time]()),
 	}
 }
 
@@ -29,7 +29,7 @@ type slidingiWndowCounter struct {
 	window    time.Duration
 	wm        map[int]int
 
-	qAccessor *access.Unique[queue.Queue[time.Time]]
+	qAccessor *unique.Unique[queue.Queue[time.Time]]
 }
 
 func (swc *slidingiWndowCounter) Close() {

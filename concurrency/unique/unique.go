@@ -1,4 +1,4 @@
-package access
+package unique
 
 // Control access to obj with unique access
 type Unique[T any] struct {
