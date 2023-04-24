@@ -36,7 +36,7 @@ func (lb *leakBucket) Allow() (<-chan interface{}, bool) {
 	defer lb.qAccessor.Release()
 	go lb.drain()
 
-	if q.Length() == int(lb.capacity) {
+	if q.Length() == lb.capacity {
 		return nil, false
 	}
 

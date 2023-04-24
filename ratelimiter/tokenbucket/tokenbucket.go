@@ -8,8 +8,8 @@ import (
 )
 
 func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) ratelimiter.RateLimiter {
-	if fillAmount > capacity {
-		panic("fillAmount is larger than the capacity")
+	if fillAmount > capacity || fillPeriod == 0 {
+		panic("invalid arguments")
 	}
 	tb := &tockenBucket{
 		capacity:   capacity,

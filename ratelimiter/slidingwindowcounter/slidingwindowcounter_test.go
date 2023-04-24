@@ -18,6 +18,13 @@ func TestSlidingWindowcounterBasic(t *testing.T) {
 	}
 }
 
+func TestCallAfterClose(t *testing.T) {
+	swc := slidingwindowcounter.NewSlidingWindowCounter(700, time.Hour)
+	assert.True(t, swc.Allow())
+	swc.Close()
+	assert.False(t, swc.Allow())
+}
+
 func TestSlidingWindowCounterParallelRequestors(t *testing.T) {
 	swc := slidingwindowcounter.NewSlidingWindowCounter(3, time.Second)
 	defer swc.Close()

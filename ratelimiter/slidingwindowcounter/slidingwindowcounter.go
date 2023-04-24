@@ -1,6 +1,7 @@
 package slidingwindowcounter
 
 import (
+	"math"
 	"time"
 
 	access "github.com/qulia/go-qulia/concurrency/unique"
@@ -15,7 +16,7 @@ func NewSlidingWindowCounter(threshold int, window time.Duration) ratelimiter.Ra
 		panic("window not allowed")
 	}
 
-	return &slidingIWndowCounter{
+	return &slidingiWndowCounter{
 		threshold: threshold,
 		window:    window,
 		wm:        make(map[int]int),
@@ -23,7 +24,7 @@ func NewSlidingWindowCounter(threshold int, window time.Duration) ratelimiter.Ra
 	}
 }
 
-type slidingIWndowCounter struct {
+type slidingiWndowCounter struct {
 	threshold int
 	window    time.Duration
 	wm        map[int]int
@@ -31,11 +32,13 @@ type slidingIWndowCounter struct {
 	qAccessor *access.Unique[queue.Queue[time.Time]]
 }
 
-func (swc *slidingIWndowCounter) Close() {
+func (swc *slidingiWndowCounter) Close() {
 	swc.qAccessor.Close()
 }
 
-func (swc *slidingIWndowCounter) Allow() bool {
+// Calculates the estimated request count based on the previous window
+// Removes older entries
+func (swc *slidingiWndowCounter) Allow() bool {
 	q, ok := swc.qAccessor.Acquire()
 	if !ok {
 		return false
@@ -45,20 +48,14 @@ func (swc *slidingIWndowCounter) Allow() bool {
 	t := time.Now()
 	cleanup(q, t, swc.window, swc.wm)
 
-	currentSlot := getSlot(swc.window, t)
-
-	previousSlot := currentSlot - 1
-	countPreviousWindow := swc.wm[previousSlot]
-	countCurrentWindow := swc.wm[currentSlot]
-	ratioPrevious := 0.0
-	if countCurrentWindow+countPreviousWindow > 0 {
-		ratioPrevious = float64(countPreviousWindow) / float64(countCurrentWindow+countPreviousWindow)
-	}
-	calculated := float64(countCurrentWindow) + ratioPrevious*float64(countPreviousWindow)
+	ps, cs, pratio := getPosition(swc.window, t)
+	pCount := swc.wm[ps]
+	cCount := swc.wm[cs]
+	calculated := float64(cCount) + pratio*float64(pCount)
 	if calculated <= float64(swc.threshold) {
 		wm := map[int]int{}
-		wm[previousSlot] = countPreviousWindow
-		wm[currentSlot] = countCurrentWindow + 1
+		wm[ps] = pCount
+		wm[cs] = cCount + 1
 		swc.wm = wm
 		q.Enqueue(t)
 		return true
@@ -67,17 +64,25 @@ func (swc *slidingIWndowCounter) Allow() bool {
 	return false
 }
 
-func getSlot(window time.Duration, t time.Time) int {
-	currentSlot := 0
+func getPosition(window time.Duration, t time.Time) (int, int, float64) {
+	cs := 0
+	ps := 0
+	cratio := 0.0
 	switch window {
 	case time.Hour:
-		currentSlot = t.Hour()
+		cs = t.Hour()
+		ps = (cs + 23) % 24
+		cratio = float64(t.Minute()) / 60.0
 	case time.Minute:
-		currentSlot = t.Minute()
+		cs = t.Minute()
+		ps = (cs + 59) % 69
+		cratio = float64(t.Second()) / 60.0
 	case time.Second:
-		currentSlot = t.Second()
+		cs = t.Second()
+		ps = (cs + 59) % 69
+		cratio = float64(t.Nanosecond()) / math.Pow10(9)
 	}
-	return currentSlot
+	return ps, cs, (1 - cratio)
 }
 
 func cleanup(q queue.Queue[time.Time], timeNow time.Time, window time.Duration, wm map[int]int) {
@@ -85,7 +90,8 @@ func cleanup(q queue.Queue[time.Time], timeNow time.Time, window time.Duration, 
 		if timeNow.Sub(q.Peek()) > window {
 			// old entry, remove
 			t := q.Dequeue()
-			wm[getSlot(window, t)]--
+			_, cs, _ := getPosition(window, t)
+			wm[cs]--
 		} else {
 			break
 		}

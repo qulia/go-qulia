@@ -22,6 +22,14 @@ func TestSlidingWindowLogBasic(t *testing.T) {
 	swl.Close()
 }
 
+func TestCallAfterClose(t *testing.T) {
+	threshold := 4
+	swl := slidingwindowlog.NewSlidingWindowLog(threshold, time.Minute)
+	assert.True(t, swl.Allow())
+	swl.Close()
+	assert.False(t, swl.Allow())
+}
+
 func TestSlidingWindowLogParallelRequestors(t *testing.T) {
 	swl := slidingwindowlog.NewSlidingWindowLog(3, time.Second)
 	defer swl.Close()
