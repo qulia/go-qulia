@@ -3,23 +3,23 @@ package slidingwindowlog
 import (
 	"time"
 
-	access "github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/lib/queue"
-	"github.com/qulia/go-qulia/ratelimiter"
 )
 
 func NewSlidingWindowLog(threshold int, lookback time.Duration) ratelimiter.RateLimiter {
 	return &slidingWindowLog{
 		threshold: threshold,
 		lookback:  lookback,
-		qAccessor: access.NewUnique(queue.NewQueue[time.Time]()),
+		qAccessor: unique.NewUnique(queue.NewQueue[time.Time]()),
 	}
 }
 
 type slidingWindowLog struct {
 	threshold int
 	lookback  time.Duration
-	qAccessor *access.Unique[queue.Queue[time.Time]]
+	qAccessor *unique.Unique[queue.Queue[time.Time]]
 }
 
 func (slw *slidingWindowLog) Close() {

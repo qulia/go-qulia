@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/ratelimiter/testhelper"
-	"github.com/qulia/go-qulia/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/algo/ratelimiter/testhelper"
+	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
 	"github.com/stretchr/testify/assert"
 )
 

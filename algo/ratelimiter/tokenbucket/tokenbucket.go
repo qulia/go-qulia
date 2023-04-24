@@ -3,8 +3,8 @@ package tokenbucket
 import (
 	"time"
 
-	access "github.com/qulia/go-qulia/concurrency/unique"
-	"github.com/qulia/go-qulia/ratelimiter"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/concurrency/unique"
 )
 
 func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) ratelimiter.RateLimiter {
@@ -19,7 +19,7 @@ func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) rate
 		lastFill:   time.Now(),
 	}
 
-	tb.tokensAccessor = access.NewUnique(&tb.tokens)
+	tb.tokensAccessor = unique.NewUnique(&tb.tokens)
 	return tb
 }
 
@@ -30,7 +30,7 @@ type tockenBucket struct {
 	lastFill   time.Time
 	tokens     int
 
-	tokensAccessor *access.Unique[*int]
+	tokensAccessor *unique.Unique[*int]
 }
 
 // Close implements TokenBucket

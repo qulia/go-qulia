@@ -1,4 +1,4 @@
-package access_test
+package unique_test
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/concurrency/access"
+	"github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/lib/queue"
 )
 
@@ -18,7 +18,7 @@ type job struct {
 
 func TestUniqueBasic(t *testing.T) {
 	// Create a queue can be accessed exclusively only by one go routine
-	key := access.NewUnique(queue.NewQueue[job]())
+	key := unique.NewUnique(queue.NewQueue[job]())
 	receiveTimeout := 5 * time.Second
 	runSenders(key)
 
@@ -61,7 +61,7 @@ func TestUniqueBasic(t *testing.T) {
 	key.Close()
 }
 
-func runSenders(key *access.Unique[queue.Queue[job]]) {
+func runSenders(key *unique.Unique[queue.Queue[job]]) {
 	senderWg := &sync.WaitGroup{}
 	senderWg.Add(10)
 	for i := 0; i < 10; i++ {

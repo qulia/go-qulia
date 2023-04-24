@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/ratelimiter"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
 )
 
 func RunWokers(t *testing.T, rl ratelimiter.RateLimiter) {

@@ -3,15 +3,15 @@ package leakybucket
 import (
 	"time"
 
-	access "github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/algo/ratelimiter"
+	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/concurrency/unique"
 	"github.com/qulia/go-qulia/lib/queue"
-	"github.com/qulia/go-qulia/ratelimiter"
-	"github.com/qulia/go-qulia/ratelimiter/tokenbucket"
 )
 
 func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) ratelimiter.RateLimiterBuffered {
 	q := queue.NewQueue[chan<- interface{}]()
-	qAccessor := access.NewUnique(q)
+	qAccessor := unique.NewUnique(q)
 	return &leakBucket{
 		capacity:    capacity,
 		qAccessor:   qAccessor,
@@ -23,7 +23,7 @@ func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) rate
 type leakBucket struct {
 	capacity    int
 	leakPeriod  time.Duration
-	qAccessor   *access.Unique[queue.Queue[chan<- interface{}]]
+	qAccessor   *unique.Unique[queue.Queue[chan<- interface{}]]
 	tokenBucket ratelimiter.RateLimiter
 }
 
