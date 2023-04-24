@@ -51,13 +51,21 @@ func TestRateLimiterBasic(t *testing.T) {
 				log.Fatal(err)
 			}
 			if res.StatusCode == http.StatusTooManyRequests {
-				t.Logf("not allowed in test:%s\n", tn)
+				t.Logf("separate call not allowed in test:%s\n", tn)
 			}
 			res.Body.Close()
 		}(tn, ts)
 		res, err := http.Get(ts.URL)
 		if err != nil || res.StatusCode != http.StatusOK {
 			log.Fatal(err)
+		}
+
+		res, err = http.Get(ts.URL)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if res.StatusCode == http.StatusTooManyRequests {
+			t.Logf("subsequent call not allowed in test:%s\n", tn)
 		}
 
 		wg.Wait()
