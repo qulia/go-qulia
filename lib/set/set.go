@@ -9,7 +9,7 @@ type Set[T comparable] interface {
 	// Add element to the set
 	Add(T)
 
-	//Remove element from the set
+	// Remove element from the set
 	Remove(T)
 
 	// CopyTo another set
@@ -49,7 +49,7 @@ type SetFlex[T lib.Keyable[K], K comparable] interface {
 	// Add element to the set
 	Add(T)
 
-	//Remove element from the set
+	// Remove element from the set
 	Remove(T)
 
 	// CopyTo another set
@@ -69,6 +69,9 @@ type SetFlex[T lib.Keyable[K], K comparable] interface {
 
 	// Returns true if set contains the element, -1, false otherwise
 	Contains(T) bool
+
+	// Gets the element with key, call Contains first
+	GetWithKey(K) T
 
 	// Size of the set
 	Len() int

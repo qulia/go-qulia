@@ -31,6 +31,13 @@ func (s *flexImpl[T, K]) Contains(elem T) bool {
 	return ok
 }
 
+func (s *flexImpl[T, K]) GetWithKey(key K) T {
+	if el, ok := s.entries[key]; ok {
+		return el
+	}
+	return *new(T)
+}
+
 func (s *flexImpl[T, K]) Union(other SetFlex[T, K]) SetFlex[T, K] {
 	unionSet := newFlexImpl[T, K]()
 	s.CopyTo(unionSet)
@@ -60,7 +67,7 @@ func (s *flexImpl[T, K]) IsSupersetOf(other SetFlex[T, K]) bool {
 
 func (s *flexImpl[T, K]) Keys() []K {
 	var res []K
-	for k, _ := range s.entries {
+	for k := range s.entries {
 		res = append(res, k)
 	}
 

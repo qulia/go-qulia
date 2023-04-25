@@ -78,6 +78,9 @@ func TestCustomKey(t *testing.T) {
 	emps2 := []employee{{1, "n1", "sn1", nil}, {3, "n1", "sn1", nil}}
 	s2 := set.NewSetFlex[employee, int]()
 	s2.FromSlice(emps2)
+
+	assert.Equal(t, s2.GetWithKey(1), emps[0])
+	assert.Equal(t, s2.GetWithKey(5), *new(employee))
 	assert.True(t, s2.IsSubsetOf(s))
 	assert.False(t, s2.IsSupersetOf(s))
 	assert.Equal(t, 3, s2.Union(s).Len())
