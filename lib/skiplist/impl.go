@@ -53,6 +53,16 @@ func (sl *skipListImpl[T]) Remove(num T) bool {
 	return true
 }
 
+func (sl *skipListImpl[T]) ToSlice() []T {
+	res := []T{}
+	level0 := sl.levels[0]
+	for e := level0.Front(); e != nil; e = e.Next() {
+		res = append(res, e.Value.(*item[T]).val)
+	}
+
+	return res[1:]
+}
+
 func (sl *skipListImpl[T]) searchHelper(target T) (*list.Element, []*list.Element) {
 	cur := sl.levels[len(sl.levels)-1].Front()
 	var path []*list.Element

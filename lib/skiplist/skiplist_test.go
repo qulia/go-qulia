@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"sort"
 	"testing"
 	"time"
 
@@ -16,6 +17,7 @@ func TestSkipList(t *testing.T) {
 	sl.Add(1)
 	sl.Add(2)
 	sl.Add(3)
+	assert.Equal(t, []int{1, 2, 3}, sl.ToSlice())
 	debugPrint(sl, "1,2,3 added")
 	assert.False(t, sl.Search(0))
 	sl.Add(4)
@@ -31,22 +33,31 @@ func TestSkipList(t *testing.T) {
 	assert.True(t, sl.Search(1))
 	sl.Remove(2)
 	assert.False(t, sl.Search(2))
+	assert.Equal(t, []int{0, 1, 3, 4}, sl.ToSlice())
 	sl.Remove(4)
+
+	assert.Equal(t, []int{0, 1, 3}, sl.ToSlice())
 	assert.False(t, sl.Search(4))
 	debugPrint(sl, "2,4 erased")
 }
 
 func TestSkipList100(t *testing.T) {
 	sl := NewSkipList(math.MinInt32, math.MaxInt32)
+	expected := []int{}
 	for i := 100; i >= 0; i-- {
 		sl.Add(i)
 		sl.Add(i)
+		expected = append(expected, i)
+		expected = append(expected, i)
 	}
+	sort.Ints(expected)
 	debugPrint(sl, "0-100 added")
+	assert.Equal(t, expected, sl.ToSlice())
 	for i := 0; i <= 100; i++ {
 		sl.Remove(i)
 		sl.Remove(i)
 	}
+	assert.Equal(t, []int{}, sl.ToSlice())
 	debugPrint(sl, "0-100 erased")
 }
 

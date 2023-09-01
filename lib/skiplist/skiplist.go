@@ -9,6 +9,8 @@ type SkipList[T constraints.Ordered] interface {
 	// Removes and returns true if exists, no-op and returns false otherwise
 	Remove(T) bool
 	Search(T) bool
+
+	ToSlice() []T
 }
 
 func NewSkipList[T constraints.Ordered](minVal, maxVal T) SkipList[T] {
