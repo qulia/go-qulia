@@ -11,6 +11,6 @@ github.com/stretchr/testify/require
 # golang.org/x/exp v0.0.0-20230420155640-133eef4313cb
 ## explicit; go 1.20
 golang.org/x/exp/constraints
-# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+# gopkg.in/yaml.v3 v3.0.0-20220521103104-8f96da9f5d5e
 ## explicit
 gopkg.in/yaml.v3
