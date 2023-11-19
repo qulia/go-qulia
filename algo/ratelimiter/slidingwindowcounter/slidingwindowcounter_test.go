@@ -28,5 +28,5 @@ func TestCallAfterClose(t *testing.T) {
 func TestSlidingWindowCounterParallelRequestors(t *testing.T) {
 	swc := slidingwindowcounter.NewSlidingWindowCounter(3, time.Second)
 	defer swc.Close()
-	testhelper.RunWokers(t, swc)
+	testhelper.RunWorkers(t, swc)
 }

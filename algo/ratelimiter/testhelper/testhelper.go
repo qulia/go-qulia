@@ -8,7 +8,7 @@ import (
 	"github.com/qulia/go-qulia/algo/ratelimiter"
 )
 
-func RunWokers(t *testing.T, rl ratelimiter.RateLimiter) {
+func RunWorkers(t *testing.T, rl ratelimiter.RateLimiter) {
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
@@ -38,7 +38,7 @@ func RunWokers(t *testing.T, rl ratelimiter.RateLimiter) {
 	wg.Wait()
 }
 
-func RunWokersBuffered(t *testing.T, rl ratelimiter.RateLimiterBuffered) {
+func RunWorkersBuffered(t *testing.T, rl ratelimiter.RateLimiterBuffered) {
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 10; i++ {
 		wg.Add(1)

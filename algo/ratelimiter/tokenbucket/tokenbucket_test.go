@@ -38,5 +38,5 @@ func TestTokenBucketParallelRequestors(t *testing.T) {
 	tb := tokenbucket.NewTokenBucket(10, 5, time.Second)
 	defer tb.Close()
 
-	testhelper.RunWokers(t, tb)
+	testhelper.RunWorkers(t, tb)
 }

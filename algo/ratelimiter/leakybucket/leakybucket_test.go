@@ -40,5 +40,5 @@ func TestCallAfterClose(t *testing.T) {
 func TestLeakyBucketParallelProducersAndConsumers(t *testing.T) {
 	lb := leakybucket.NewLeakyBucket(10, 5, time.Second)
 	defer lb.Close()
-	testhelper.RunWokersBuffered(t, lb)
+	testhelper.RunWorkersBuffered(t, lb)
 }

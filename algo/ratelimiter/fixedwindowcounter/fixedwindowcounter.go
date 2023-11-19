@@ -7,15 +7,15 @@ import (
 	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
 )
 
+// TokenBucket with the provided window is the "divider"
+// Allowed threshold defines the number of tokens per slot
+// Windows not necessarily start at exact intervals
 func NewFixedWindowCounter(threshold int, window time.Duration) ratelimiter.RateLimiter {
 	return &fixedWindowCounter{
 		tb: tokenbucket.NewTokenBucket(threshold, threshold, window),
 	}
 }
 
-// TokenBucket with the provided window is the "divider"
-// Allowed threshold defines the number of tokens per slot
-// Windows not necessarily start at exact intervals
 type fixedWindowCounter struct {
 	tb ratelimiter.RateLimiter
 }

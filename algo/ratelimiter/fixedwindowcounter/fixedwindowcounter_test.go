@@ -22,5 +22,5 @@ func TestFixedWindowCounterParallelRequestors(t *testing.T) {
 	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Second)
 	defer fwc.Close()
 
-	testhelper.RunWokers(t, fwc)
+	testhelper.RunWorkers(t, fwc)
 }

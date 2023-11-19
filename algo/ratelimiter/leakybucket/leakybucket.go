@@ -9,10 +9,13 @@ import (
 	"github.com/qulia/go-qulia/lib/queue"
 )
 
+// Allows flow in as long as not at capacity
+// Whatever passes through is buffered, the caller is responsible for waiting on the channel to proceed
+// It will be able to proceed based on leakAmount and leakPeriod
 func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) ratelimiter.RateLimiterBuffered {
 	q := queue.NewQueue[chan<- interface{}]()
 	qAccessor := unique.NewUnique(q)
-	return &leakBucket{
+	return &leakyBucket{
 		capacity:    capacity,
 		qAccessor:   qAccessor,
 		leakPeriod:  leakPeriod,
@@ -20,14 +23,14 @@ func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) rate
 	}
 }
 
-type leakBucket struct {
+type leakyBucket struct {
 	capacity    int
 	leakPeriod  time.Duration
 	qAccessor   *unique.Unique[queue.Queue[chan<- interface{}]]
 	tokenBucket ratelimiter.RateLimiter
 }
 
-func (lb *leakBucket) Allow() (<-chan interface{}, bool) {
+func (lb *leakyBucket) Allow() (<-chan interface{}, bool) {
 	q, ok := lb.qAccessor.Acquire()
 	if !ok {
 		return nil, false
@@ -45,7 +48,7 @@ func (lb *leakBucket) Allow() (<-chan interface{}, bool) {
 	return (<-chan interface{})(ch), true
 }
 
-func (lb *leakBucket) drain() {
+func (lb *leakyBucket) drain() {
 	q, ok := lb.qAccessor.Acquire()
 	if !ok {
 		return
@@ -62,8 +65,7 @@ func (lb *leakBucket) drain() {
 	time.AfterFunc(lb.leakPeriod, lb.drain)
 }
 
-// Close implements TokenBucket
-func (lb *leakBucket) Close() {
+func (lb *leakyBucket) Close() {
 	lb.tokenBucket.Close()
 	lb.qAccessor.Close()
 }

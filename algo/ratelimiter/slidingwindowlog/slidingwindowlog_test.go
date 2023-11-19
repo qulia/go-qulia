@@ -33,5 +33,5 @@ func TestCallAfterClose(t *testing.T) {
 func TestSlidingWindowLogParallelRequestors(t *testing.T) {
 	swl := slidingwindowlog.NewSlidingWindowLog(3, time.Second)
 	defer swl.Close()
-	testhelper.RunWokers(t, swl)
+	testhelper.RunWorkers(t, swl)
 }
