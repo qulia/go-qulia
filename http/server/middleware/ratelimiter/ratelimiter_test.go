@@ -51,7 +51,7 @@ func TestRateLimiterBasic(t *testing.T) {
 				log.Fatal(err)
 			}
 			if res.StatusCode == http.StatusTooManyRequests {
-				t.Logf("separate call not allowed in test:%s\n", tn)
+				fmt.Printf("separate call not allowed in test:%s\n", tn)
 			}
 			res.Body.Close()
 		}(tn, ts)
@@ -65,7 +65,7 @@ func TestRateLimiterBasic(t *testing.T) {
 			log.Fatal(err)
 		}
 		if res.StatusCode == http.StatusTooManyRequests {
-			t.Logf("subsequent call not allowed in test:%s\n", tn)
+			fmt.Printf("subsequent call not allowed in test:%s\n", tn)
 		}
 
 		wg.Wait()

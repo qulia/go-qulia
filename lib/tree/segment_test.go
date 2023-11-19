@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -95,7 +96,7 @@ func TestSegmentTreeEventAvailability(t *testing.T) {
 			duration := events[e][1] - events[e][0] + 1
 			actual := peopleAvailibility[p].QueryRange(events[e][0], events[e][1]) == duration
 			expected := canAttendExpected[p][e]
-			t.Logf("Event %d, person %s: expected %t, actual %t", e, p, expected, actual)
+			fmt.Printf("Event %d, person %s: expected %t, actual %t\n", e, p, expected, actual)
 			assert.Equal(t, expected, actual)
 		}
 	}
@@ -141,7 +142,7 @@ func TestSegmentTreeEventScheduling(t *testing.T) {
 			duration := events[e][1] - events[e][0] + 1
 			actual := peopleAvailibility[p].QueryRange(events[e][0], events[e][1]) == duration
 			expected := canAttendExpected[p][e]
-			t.Logf("Event %d, person %s: expected %t, actual %t", e, p, expected, actual)
+			fmt.Printf("Event %d, person %s: expected %t, actual %t\n", e, p, expected, actual)
 			assert.Equal(t, expected, actual)
 			if expected {
 				// block of the time for the attendee

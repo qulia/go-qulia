@@ -1,7 +1,7 @@
 package unique_test
 
 import (
-	"log"
+	"fmt"
 	"strconv"
 	"sync"
 	"testing"
@@ -26,7 +26,7 @@ func TestUniqueBasic(t *testing.T) {
 	receiverWg := &sync.WaitGroup{}
 	receiverWg.Add(1)
 	go func() {
-		defer log.Printf("Exiting consumer")
+		defer fmt.Printf("Exiting consumer\n")
 		defer receiverWg.Done()
 		for {
 			// Acquire the job queue before consuming from
@@ -36,7 +36,7 @@ func TestUniqueBasic(t *testing.T) {
 			}
 			if !jobQueue.IsEmpty() {
 				job := jobQueue.Dequeue()
-				log.Printf("Processing job %v", job)
+				fmt.Printf("Processing job %v\n", job)
 			} else {
 				key.Release()
 				<-time.After(receiveTimeout)
@@ -76,7 +76,7 @@ func runSenders(key *unique.Unique[queue.Queue[job]]) {
 				id:   i,
 				name: "job" + strconv.Itoa(i),
 			}
-			log.Printf("Queuing job %v", job)
+			fmt.Printf("Queuing job %v\n", job)
 			jobQueue.Enqueue(job)
 			key.Release()
 		}(i)

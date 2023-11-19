@@ -1,7 +1,7 @@
 package heap_test
 
 import (
-	"log"
+	"fmt"
 	"math/rand"
 	"sort"
 	"testing"
@@ -71,7 +71,7 @@ func (h *JobHeap) Pop() interface{} {
 
 func BenchmarkHeapBasic(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
-	log.Printf("Size %d", len(genInput))
+	fmt.Printf("Size %d\n", len(genInput))
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
@@ -85,7 +85,7 @@ func BenchmarkHeapBasic(b *testing.B) {
 func BenchmarkHeapPush(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 
-	log.Printf("Size %d", len(genInput))
+	fmt.Printf("Size %d\n", len(genInput))
 	//log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
@@ -102,7 +102,7 @@ func BenchmarkHeapPush(b *testing.B) {
 func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 
-	log.Printf("Size %d", len(genInput))
+	fmt.Printf("Size %d\n", len(genInput))
 
 	b.ResetTimer()
 	b.Run("container/heap", func(b *testing.B) {

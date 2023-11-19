@@ -1,7 +1,7 @@
 package heap_test
 
 import (
-	"log"
+	"fmt"
 	"sort"
 	"testing"
 
@@ -147,6 +147,6 @@ func TestKthLargest(t *testing.T) {
 	}
 
 	result := numsHeap.Extract()
-	log.Printf("Result: %d", result)
+	fmt.Printf("Result: %d\n", result)
 	assert.Equal(t, 8221, result)
 }
