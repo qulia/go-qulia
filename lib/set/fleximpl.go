@@ -1,12 +1,12 @@
 package set
 
-import "github.com/qulia/go-qulia/lib"
+import "github.com/qulia/go-qulia/lib/common"
 
-type flexImpl[T lib.Keyable[K], K comparable] struct {
+type flexImpl[T common.Keyable[K], K comparable] struct {
 	entries map[K]T
 }
 
-func newFlexImpl[T lib.Keyable[K], K comparable]() *flexImpl[T, K] {
+func newFlexImpl[T common.Keyable[K], K comparable]() *flexImpl[T, K] {
 	set := flexImpl[T, K]{
 		entries: make(map[K]T),
 	}

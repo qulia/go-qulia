@@ -65,7 +65,7 @@ func visitAll(c string, g graph.Graph[string], t, n int, ticketCount map[ticket]
 
 	// sort targets to get lexical order in result
 	var ds []string
-	for n, _ := range g.Adjacencies(c) {
+	for n := range g.Adjacencies(c) {
 		ds = append(ds, n)
 	}
 	sort.Strings(ds)

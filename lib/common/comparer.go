@@ -1,8 +1,6 @@
-package lib
+package common
 
-import (
-	"golang.org/x/exp/constraints"
-)
+import "golang.org/x/exp/constraints"
 
 // Return negative if less, positive if greater, 0 if equal
 type Comparer[T any] interface {
@@ -21,16 +19,4 @@ func (dc DefaultComparer[T]) Compare(other DefaultComparer[T]) int {
 	}
 
 	return 0
-}
-
-type Keyable[K comparable] interface {
-	Key() K
-}
-
-type DefaultKeyable[T comparable] struct {
-	Val T
-}
-
-func (dk DefaultKeyable[T]) Key() T {
-	return dk.Val
 }

@@ -18,12 +18,13 @@ type item[T constraints.Ordered] struct {
 type skipListImpl[T constraints.Ordered] struct {
 	levels         []*list.List
 	minVal, maxVal T
+	randomGen      *rand.Rand
 }
 
 func newSkipListImpl[T constraints.Ordered](minVal, maxVal T) *skipListImpl[T] {
 	sl := skipListImpl[T]{levels: []*list.List{list.New()}, minVal: minVal, maxVal: maxVal}
 	sl.levels[0].PushBack(&item[T]{minVal, nil, nil, sl.levels[0]})
-	rand.Seed(time.Now().UnixNano())
+	sl.randomGen = rand.New(rand.NewSource(time.Now().UnixNano()))
 	return &sl
 }
 
@@ -97,7 +98,7 @@ func (sl *skipListImpl[T]) searchHelper(target T) (*list.Element, []*list.Elemen
 func (sl *skipListImpl[T]) promote(el *list.Element, path []*list.Element) {
 	num := el.Value.(*item[T]).val
 	pathIndex := len(path) - 1
-	for rand.Uint32()%2 == 1 {
+	for sl.randomGen.Uint32()%2 == 1 {
 		it := el.Value.(*item[T])
 		var appendTo *list.Element
 		if pathIndex < 0 {

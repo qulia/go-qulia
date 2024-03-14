@@ -1,0 +1,56 @@
+{
+  "go.diagnostic.vulncheck": "Imports",
+  "go.useLanguageServer": true,
+  "go.lintOnSave": "file",
+  "gopls": {
+    "verboseOutput": true,
+    "analyses": {
+      "unusedparams": true,
+      "shadow": true,
+      "nilness": true,
+      "unusedwrite": true,
+      "simplifycompositelit": true,
+      "simplifyrange": true,
+      "simplifyslice": true,
+      "undeclaredname": true,
+      "useany": true,
+      "errorsas": true,
+      "httpresponse": true,
+      "loopclosure": true,
+      "nonewvars": true,
+      "testhelper": true,
+      "unreachable": true,
+      "unusedvariable": true,
+      "fieldalignment": false,
+      "fillreturns": true,
+      "noresultvalues": true,
+      "ifaceassert": true,
+      "atomic": true,
+      "bools": true,
+      "buildtag": true,
+      "cgocall": true,
+      "composites": true,
+      "copylocks": true,
+      "lostcancel": true,
+      "nilfunc": true,
+      "printf": true,
+      "shift": true,
+      "stdmethods": true,
+      "structtag": true,
+      "tests": true,
+      "unmarshal": true,
+      "unsafeptr": true,
+      "unusedresult": true
+    },
+    "staticcheck": true,
+    "formatting.gofumpt": true
+  },
+  "[go]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    },
+    "editor.formatOnSave": true,
+    "editor.snippetSuggestions": "top",
+    "editor.defaultFormatter": "golang.go"
+  },
+}

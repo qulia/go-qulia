@@ -17,15 +17,18 @@ func NewUnique[T any](obj T) *Unique[T] {
 }
 
 func (u *Unique[T]) Acquire() (T, bool) {
-	o, more := <-u.ch
-	return o, more
+	o, ok := <-u.ch
+	return o, ok
 }
 
 func (u *Unique[T]) Release() {
 	u.ch <- u.obj
 }
 
+// ok to call multiple times
 func (u *Unique[T]) Close() {
-	u.Acquire()
-	close(u.ch)
+	_, ok := u.Acquire()
+	if ok {
+		close(u.ch)
+	}
 }

@@ -6,12 +6,13 @@ import (
 
 	"github.com/qulia/go-qulia/algo/ratelimiter"
 	"github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/lib/common"
 	"github.com/qulia/go-qulia/lib/queue"
 )
 
-// Window duration is determined by the look back
+// Window duration is determined by the lookback
 // Allowed values for window 1hour, 1min, 1sec
-func NewSlidingWindowCounter(threshold int, window time.Duration) ratelimiter.RateLimiter {
+func NewSlidingWindowCounter(threshold int, window time.Duration, timeP common.TimeProvider) ratelimiter.RateLimiter {
 	if window != time.Second && window != time.Minute && window != time.Hour {
 		panic("window not allowed")
 	}
@@ -21,6 +22,7 @@ func NewSlidingWindowCounter(threshold int, window time.Duration) ratelimiter.Ra
 		window:    window,
 		wm:        make(map[int]int),
 		qAccessor: unique.NewUnique(queue.NewQueue[time.Time]()),
+		timeP:     timeP,
 	}
 }
 
@@ -28,6 +30,7 @@ type slidingWindowCounter struct {
 	threshold int
 	window    time.Duration
 	wm        map[int]int
+	timeP     common.TimeProvider
 
 	qAccessor *unique.Unique[queue.Queue[time.Time]]
 }
@@ -43,18 +46,18 @@ func (swc *slidingWindowCounter) Allow() bool {
 	}
 
 	defer swc.qAccessor.Release()
-	t := time.Now()
+	t := swc.timeP.Now()
 	cleanup(q, t, swc.window, swc.wm)
 
 	// based on current time and window
 	// find previous slot, current slot and ratio previous slot in the window
-	// calculate the total withing the window
+	// calculate the total within the window
 	// allow if less than threshold
 	ps, cs, pratio := getPosition(swc.window, t)
 	pCount := swc.wm[ps]
 	cCount := swc.wm[cs]
 	calculated := float64(cCount) + pratio*float64(pCount)
-	if calculated <= float64(swc.threshold) {
+	if calculated < float64(swc.threshold) {
 		wm := map[int]int{}
 		wm[ps] = pCount
 		wm[cs] = cCount + 1

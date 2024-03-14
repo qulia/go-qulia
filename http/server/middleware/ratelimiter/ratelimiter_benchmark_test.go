@@ -12,31 +12,33 @@ import (
 	"time"
 
 	"github.com/qulia/go-qulia/http/server/middleware/ratelimiter"
+	"github.com/qulia/go-qulia/lib/common"
 )
 
 const (
 	ratePerSecond = 6
 )
 
-var benchMap = map[string]func(*http.ServeMux, <-chan interface{}) http.Handler{
-	"TokenBucket": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.TokenBucket(ratePerSecond*2, ratePerSecond, time.Second, mux, doneCh)
+var benchMap = map[string]func(*http.ServeMux, <-chan interface{}, common.TimeProvider) http.Handler{
+	"TokenBucket": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.TokenBucket(ratePerSecond*2, ratePerSecond, time.Second, mux, doneCh, mtp)
 	},
-	"LeakyBucket": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.LeakyBucket(ratePerSecond*2, ratePerSecond, time.Second, mux, doneCh)
+	"LeakyBucket": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.LeakyBucket(ratePerSecond*2, ratePerSecond, time.Second, mux, doneCh, mtp)
 	},
-	"FixedWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.FixedWindowCounter(ratePerSecond, time.Second, mux, doneCh)
+	"FixedWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.FixedWindowCounter(ratePerSecond, time.Second, mux, doneCh, mtp)
 	},
-	"SlidingWindowLog": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.SlidingWindowLog(ratePerSecond, time.Second, mux, doneCh)
+	"SlidingWindowLog": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.SlidingWindowLog(ratePerSecond, time.Second, mux, doneCh, mtp)
 	},
-	"SlidingWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.SlidingWindowCounter(ratePerSecond, time.Second, mux, doneCh)
+	"SlidingWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.SlidingWindowCounter(ratePerSecond, time.Second, mux, doneCh, mtp)
 	},
 }
 
 func BenchmarkRateLimit(b *testing.B) {
+	mtp := common.NewRealTimeProvider()
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello, client")
 	}
@@ -47,7 +49,7 @@ func BenchmarkRateLimit(b *testing.B) {
 	for limiter, handler := range benchMap {
 		b.Run(limiter, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				runBenchmark(handler(mux, doneCh), b)
+				runBenchmark(handler(mux, doneCh, mtp), b)
 			}
 		})
 	}

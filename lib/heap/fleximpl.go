@@ -1,23 +1,23 @@
 package heap
 
 import (
-	"github.com/qulia/go-qulia/lib"
+	"github.com/qulia/go-qulia/lib/common"
 )
 
 // Heap that allows custom comparison for the entries while maintaining heap properties
 // The contained type T should implment <lib.Leed
-type fleximpl[T lib.Comparer[T]] struct {
+type fleximpl[T common.Comparer[T]] struct {
 	maxOnTop bool
 	buffer   []T
 }
 
-func newFlexImpl[T lib.Comparer[T]](input []T, maxOnTop bool) *fleximpl[T] {
+func newFlexImpl[T common.Comparer[T]](input []T, maxOnTop bool) *fleximpl[T] {
 	buffer := make([]T, len(input))
 	copy(buffer, input)
 	return initHeap(buffer, maxOnTop)
 }
 
-func initHeap[T lib.Comparer[T]](buffer []T, maxOnTop bool) *fleximpl[T] {
+func initHeap[T common.Comparer[T]](buffer []T, maxOnTop bool) *fleximpl[T] {
 	h := fleximpl[T]{buffer: buffer, maxOnTop: maxOnTop}
 	h.heapify()
 	return &h
@@ -27,6 +27,10 @@ func (h *fleximpl[T]) Insert(elem T) {
 	// Insert at the end, sift up
 	h.buffer = append(h.buffer, elem)
 	h.siftUp(h.Size() - 1)
+}
+
+func (h *fleximpl[T]) Peek() T {
+	return h.buffer[0]
 }
 
 func (h *fleximpl[T]) Extract() T {

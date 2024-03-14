@@ -1,7 +1,7 @@
 package heap
 
 import (
-	"github.com/qulia/go-qulia/lib"
+	"github.com/qulia/go-qulia/lib/common"
 	"golang.org/x/exp/constraints"
 )
 
@@ -15,6 +15,9 @@ type Heap[T constraints.Ordered] interface {
 	// If heap is empty, the call will panic
 	Extract() T
 
+	// Peek top element from the heap
+	Peek() T
+
 	// Size of the heap
 	Size() int
 
@@ -23,13 +26,16 @@ type Heap[T constraints.Ordered] interface {
 }
 
 // Heap content of any type should implement lib.Comparer interface
-type HeapFlex[T lib.Comparer[T]] interface {
+type HeapFlex[T common.Comparer[T]] interface {
 	// Insert element to the heap
 	Insert(T)
 
 	// Extract top element from the heap
 	// If heap is empty, the call will panic
 	Extract() T
+
+	// Peek top element from the heap
+	Peek() T
 
 	// Size of the heap
 	Size() int
@@ -44,7 +50,7 @@ type HeapFlex[T lib.Comparer[T]] interface {
 //
 // input: The input slice is cloned and will not be modified by this method
 // Pass nil as input if you do not have any initial entries
-func NewMinHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
+func NewMinHeapFlex[T common.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, false)
 }
 
@@ -54,7 +60,7 @@ func NewMinHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
 //
 // input: The input slice is cloned and will not be modified by this method.
 // Pass nil as input if you do not have any initial entries
-func NewMaxHeapFlex[T lib.Comparer[T]](input []T) HeapFlex[T] {
+func NewMaxHeapFlex[T common.Comparer[T]](input []T) HeapFlex[T] {
 	return newFlexImpl(input, true)
 }
 

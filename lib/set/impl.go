@@ -1,25 +1,27 @@
 package set
 
-import "github.com/qulia/go-qulia/lib"
+import (
+	"github.com/qulia/go-qulia/lib/common"
+)
 
 type setImpl[T comparable] struct {
-	*flexImpl[lib.DefaultKeyable[T], T]
+	*flexImpl[common.DefaultKeyable[T], T]
 }
 
 func newSetImpl[T comparable]() *setImpl[T] {
-	return &setImpl[T]{newFlexImpl[lib.DefaultKeyable[T], T]()}
+	return &setImpl[T]{newFlexImpl[common.DefaultKeyable[T], T]()}
 }
 
 func (s *setImpl[T]) Add(elem T) {
-	s.flexImpl.Add(lib.DefaultKeyable[T]{Val: elem})
+	s.flexImpl.Add(common.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Remove(elem T) {
-	s.flexImpl.Remove(lib.DefaultKeyable[T]{Val: elem})
+	s.flexImpl.Remove(common.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Contains(elem T) bool {
-	return s.flexImpl.Contains(lib.DefaultKeyable[T]{Val: elem})
+	return s.flexImpl.Contains(common.DefaultKeyable[T]{Val: elem})
 }
 
 func (s *setImpl[T]) Union(other Set[T]) Set[T] {

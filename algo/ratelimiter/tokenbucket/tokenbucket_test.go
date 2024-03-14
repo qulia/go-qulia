@@ -6,12 +6,16 @@ import (
 
 	"github.com/qulia/go-qulia/algo/ratelimiter/testhelper"
 	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/mock"
+	"github.com/qulia/go-qulia/mock/mock_time"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTokenBucketBasic(t *testing.T) {
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
 	fillAmount := 3
-	tb := tokenbucket.NewTokenBucket(10, fillAmount, time.Minute)
+	tb := tokenbucket.NewTokenBucket(10, fillAmount, time.Minute, mtp)
 	defer tb.Close()
 	for i := 0; i < fillAmount; i++ {
 		assert.True(t, tb.Allow())
@@ -20,23 +24,29 @@ func TestTokenBucketBasic(t *testing.T) {
 }
 
 func TestCallAfterClose(t *testing.T) {
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
 	fillAmount := 3
-	tb := tokenbucket.NewTokenBucket(10, fillAmount, time.Minute)
+	tb := tokenbucket.NewTokenBucket(10, fillAmount, time.Minute, mtp)
 	assert.True(t, tb.Allow())
 	tb.Close()
 	assert.False(t, tb.Allow())
 }
 
 func TestTokenOverflow(t *testing.T) {
-	tb := tokenbucket.NewTokenBucket(10, 8, time.Second)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	tb := tokenbucket.NewTokenBucket(10, 8, time.Second, mtp)
 	assert.True(t, tb.Allow())
-	time.Sleep(time.Second * 2)
+	mtp.Sleep(time.Second * 2)
 	assert.True(t, tb.Allow())
 }
 
 func TestTokenBucketParallelRequestors(t *testing.T) {
-	tb := tokenbucket.NewTokenBucket(10, 5, time.Second)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	tb := tokenbucket.NewTokenBucket(10, 5, time.Second, mtp)
 	defer tb.Close()
 
-	testhelper.RunWorkers(t, tb)
+	testhelper.RunWorkers(t, tb, mtp)
 }

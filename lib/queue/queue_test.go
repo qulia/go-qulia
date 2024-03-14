@@ -19,6 +19,7 @@ func verify(t *testing.T, queue queue.Queue[int]) {
 
 	assert.Equal(t, 3, queue.Dequeue())
 	assert.Equal(t, 7, queue.Dequeue())
+	assert.Equal(t, 0, queue.Peek())
 	assert.Equal(t, 0, queue.Dequeue())
 	assert.True(t, queue.IsEmpty())
 	assert.Panics(t, func() { queue.Dequeue() })

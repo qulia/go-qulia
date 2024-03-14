@@ -10,30 +10,36 @@ import (
 	"github.com/qulia/go-qulia/algo/ratelimiter/slidingwindowcounter"
 	"github.com/qulia/go-qulia/algo/ratelimiter/slidingwindowlog"
 	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/lib/common"
 )
 
-func TokenBucket(capacity int, fillAmount int, fillPeriod time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {
-	tb := tokenbucket.NewTokenBucket(capacity, fillAmount, fillPeriod)
+func TokenBucket(capacity int, fillAmount int, fillPeriod time.Duration,
+	next http.Handler, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+	tb := tokenbucket.NewTokenBucket(capacity, fillAmount, fillPeriod, mtp)
 	return handle(tb, next, doneCh)
 }
 
-func LeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {
-	lb := leakybucket.NewLeakyBucket(capacity, leakAmount, leakPeriod)
+func LeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration,
+	next http.Handler, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+	lb := leakybucket.NewLeakyBucket(capacity, leakAmount, leakPeriod, mtp)
 	return handleBuffered(lb, next, doneCh)
 }
 
-func FixedWindowCounter(threshold int, window time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {
-	fwc := fixedwindowcounter.NewFixedWindowCounter(threshold, window)
+func FixedWindowCounter(threshold int, window time.Duration,
+	next http.Handler, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+	fwc := fixedwindowcounter.NewFixedWindowCounter(threshold, window, mtp)
 	return handle(fwc, next, doneCh)
 }
 
-func SlidingWindowCounter(threshold int, window time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {
-	swc := slidingwindowcounter.NewSlidingWindowCounter(threshold, window)
+func SlidingWindowCounter(threshold int, window time.Duration,
+	next http.Handler, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+	swc := slidingwindowcounter.NewSlidingWindowCounter(threshold, window, mtp)
 	return handle(swc, next, doneCh)
 }
 
-func SlidingWindowLog(threshold int, window time.Duration, next http.Handler, doneCh <-chan interface{}) http.Handler {
-	swl := slidingwindowlog.NewSlidingWindowLog(threshold, window)
+func SlidingWindowLog(threshold int, window time.Duration,
+	next http.Handler, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+	swl := slidingwindowlog.NewSlidingWindowLog(threshold, window, mtp)
 	return handle(swl, next, doneCh)
 }
 

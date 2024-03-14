@@ -10,23 +10,27 @@ import (
 	"time"
 
 	"github.com/qulia/go-qulia/http/server/middleware/ratelimiter"
+	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/mock"
+	"github.com/qulia/go-qulia/mock/mock_time"
+	"github.com/stretchr/testify/assert"
 )
 
-var testMap = map[string]func(*http.ServeMux, <-chan interface{}) http.Handler{
-	"TokenBucket": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.TokenBucket(1, 1, time.Second*10, mux, doneCh)
+var testMap = map[string]func(*http.ServeMux, <-chan interface{}, common.TimeProvider) http.Handler{
+	"TokenBucket": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.TokenBucket(1, 1, time.Second*10, mux, doneCh, mtp)
 	},
-	"LeakyBucket": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.LeakyBucket(1, 1, time.Second*10, mux, doneCh)
+	"LeakyBucket": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.LeakyBucket(1, 1, time.Second*10, mux, doneCh, mtp)
 	},
-	"FixedWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.FixedWindowCounter(1, time.Second*10, mux, doneCh)
+	"FixedWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.FixedWindowCounter(1, time.Second*10, mux, doneCh, mtp)
 	},
-	"SlidingWindowLog": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.SlidingWindowLog(1, time.Second*10, mux, doneCh)
+	"SlidingWindowLog": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.SlidingWindowLog(1, time.Second*10, mux, doneCh, mtp)
 	},
-	"SlidingWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}) http.Handler {
-		return ratelimiter.SlidingWindowCounter(1, time.Second, mux, doneCh)
+	"SlidingWindowCounter": func(mux *http.ServeMux, doneCh <-chan interface{}, mtp common.TimeProvider) http.Handler {
+		return ratelimiter.SlidingWindowCounter(1, time.Minute, mux, doneCh, mtp)
 	},
 }
 
@@ -38,21 +42,21 @@ func TestRateLimiterBasic(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 	for tn, rateLimitedHandlerFunc := range testMap {
-		ts := httptest.NewServer(rateLimitedHandlerFunc(mux, doneCh))
-		defer ts.Close()
-
+		mtp := mock.GetMockTimeProviderLateScheduling()
+		ts := httptest.NewServer(rateLimitedHandlerFunc(mux, doneCh, mtp))
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
 		go func(tn string, ts *httptest.Server) {
 			defer wg.Done()
-			time.Sleep(time.Second * 2)
+			// need to make sure this routine does not continue first
+			time.Sleep(time.Millisecond * 10)
 			res, err := http.Get(ts.URL)
 			if err != nil {
 				log.Fatal(err)
 			}
-			if res.StatusCode == http.StatusTooManyRequests {
-				fmt.Printf("separate call not allowed in test:%s\n", tn)
-			}
+			// Request that run later in a different routine should be rejected
+			fmt.Printf("call-separate-go-routine:%s:%d\n", tn, res.StatusCode)
+			assert.Equal(t, http.StatusTooManyRequests, res.StatusCode)
 			res.Body.Close()
 		}(tn, ts)
 		res, err := http.Get(ts.URL)
@@ -64,12 +68,22 @@ func TestRateLimiterBasic(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if res.StatusCode == http.StatusTooManyRequests {
-			fmt.Printf("subsequent call not allowed in test:%s\n", tn)
+		fmt.Printf("call-same-go-routine:%s:%d\n", tn, res.StatusCode)
+		if tn == "LeakyBucket" {
+			// for leaky bucket,
+			// first call is allowed and leaks as token starts full with 1
+			// since there is a buffer the second call will be allowed but only proceed after the
+			// time progresses
+			assert.Equal(t, http.StatusOK, res.StatusCode)
+		} else {
+			// Request that run later in a the same routine should be rejected
+			assert.Equal(t, http.StatusTooManyRequests, res.StatusCode)
 		}
 
 		wg.Wait()
 		res.Body.Close()
+		ts.Close()
+		mtp.(*mock_time.MockTimeProvider).Close()
 		if err != nil {
 			log.Fatal(err)
 		}

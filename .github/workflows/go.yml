@@ -5,10 +5,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.20.3
+      - name: Set up Go 1.22.1
         uses: actions/setup-go@v1
         with:
-          go-version: 1.20.3
+          go-version: 1.22.1
         id: go
 
       - name: Check out code into the Go module directory
@@ -24,9 +24,9 @@ jobs:
 
       - name: Run Test
         run: |
-          go test -v ./... -covermode=count -coverprofile=coverage.out
+          go test -timeout 300s -v ./... -covermode=count -coverprofile=coverage.out
           go tool cover -func=coverage.out -o=coverage.out
-
+          go test -race ./...
       - name: Go Coverage Badge # Pass the `coverage.out` output to this action
         uses: tj-actions/coverage-badge-go@v1.2
         with:

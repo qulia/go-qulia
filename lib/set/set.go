@@ -1,7 +1,7 @@
 package set
 
 import (
-	"github.com/qulia/go-qulia/lib"
+	"github.com/qulia/go-qulia/lib/common"
 )
 
 // Set with elements of any comparable type
@@ -43,9 +43,9 @@ type Set[T comparable] interface {
 	Keys() []T
 }
 
-// Set with elements of any type that implements lib.Keyable with Key() method that returns
+// Set with elements of any type that implements common.Keyable with Key() method that returns
 // K which is comparable
-type SetFlex[T lib.Keyable[K], K comparable] interface {
+type SetFlex[T common.Keyable[K], K comparable] interface {
 	// Add element to the set
 	Add(T)
 
@@ -86,7 +86,7 @@ type SetFlex[T lib.Keyable[K], K comparable] interface {
 	Keys() []K
 }
 
-func NewSetFlex[T lib.Keyable[K], K comparable]() SetFlex[T, K] {
+func NewSetFlex[T common.Keyable[K], K comparable]() SetFlex[T, K] {
 	return newFlexImpl[T, K]()
 }
 

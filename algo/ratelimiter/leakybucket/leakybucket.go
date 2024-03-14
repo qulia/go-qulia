@@ -6,20 +6,22 @@ import (
 	"github.com/qulia/go-qulia/algo/ratelimiter"
 	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
 	"github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/lib/common"
 	"github.com/qulia/go-qulia/lib/queue"
 )
 
 // Allows flow in as long as not at capacity
 // Whatever passes through is buffered, the caller is responsible for waiting on the channel to proceed
 // It will be able to proceed based on leakAmount and leakPeriod
-func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration) ratelimiter.RateLimiterBuffered {
+func NewLeakyBucket(capacity int, leakAmount int, leakPeriod time.Duration, mtp common.TimeProvider) ratelimiter.RateLimiterBuffered {
 	q := queue.NewQueue[chan<- interface{}]()
 	qAccessor := unique.NewUnique(q)
 	return &leakyBucket{
 		capacity:    capacity,
 		qAccessor:   qAccessor,
 		leakPeriod:  leakPeriod,
-		tokenBucket: tokenbucket.NewTokenBucket(leakAmount, leakAmount, leakPeriod),
+		tokenBucket: tokenbucket.NewTokenBucket(leakAmount, leakAmount, leakPeriod, mtp),
+		timeP:       mtp,
 	}
 }
 
@@ -28,6 +30,7 @@ type leakyBucket struct {
 	leakPeriod  time.Duration
 	qAccessor   *unique.Unique[queue.Queue[chan<- interface{}]]
 	tokenBucket ratelimiter.RateLimiter
+	timeP       common.TimeProvider
 }
 
 func (lb *leakyBucket) Allow() (<-chan interface{}, bool) {
@@ -62,7 +65,7 @@ func (lb *leakyBucket) drain() {
 		}(x)
 	}
 	// Schedule next check, in case there are no incoming calls
-	time.AfterFunc(lb.leakPeriod, lb.drain)
+	lb.timeP.AfterFunc(lb.leakPeriod, lb.drain)
 }
 
 func (lb *leakyBucket) Close() {

@@ -6,12 +6,17 @@ import (
 
 	"github.com/qulia/go-qulia/algo/ratelimiter/fixedwindowcounter"
 	"github.com/qulia/go-qulia/algo/ratelimiter/testhelper"
+	"github.com/qulia/go-qulia/mock"
+	"github.com/qulia/go-qulia/mock/mock_time"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFixedWindowCounter(t *testing.T) {
 	threshold := 3
-	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Minute)
+
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Minute, mtp)
 	defer fwc.Close()
 	for i := 0; i < threshold; i++ {
 		assert.True(t, fwc.Allow())
@@ -19,8 +24,10 @@ func TestFixedWindowCounter(t *testing.T) {
 }
 
 func TestFixedWindowCounterParallelRequestors(t *testing.T) {
-	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Second)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	fwc := fixedwindowcounter.NewFixedWindowCounter(3, time.Second, mtp)
 	defer fwc.Close()
 
-	testhelper.RunWorkers(t, fwc)
+	testhelper.RunWorkers(t, fwc, mtp)
 }

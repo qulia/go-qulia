@@ -6,12 +6,17 @@ import (
 
 	"github.com/qulia/go-qulia/algo/ratelimiter/leakybucket"
 	"github.com/qulia/go-qulia/algo/ratelimiter/testhelper"
+	"github.com/qulia/go-qulia/mock"
+	"github.com/qulia/go-qulia/mock/mock_time"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLeakyBucketBasic(t *testing.T) {
 	leakAmount := 4
-	lb := leakybucket.NewLeakyBucket(5, leakAmount, time.Minute)
+
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	lb := leakybucket.NewLeakyBucket(5, leakAmount, time.Minute, mtp)
 	defer lb.Close()
 	for i := 0; i < leakAmount; i++ {
 		ch, ok := lb.Allow()
@@ -21,7 +26,9 @@ func TestLeakyBucketBasic(t *testing.T) {
 }
 
 func TestLeakyBucketCapOne(t *testing.T) {
-	lb := leakybucket.NewLeakyBucket(1, 1, time.Second*10)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	lb := leakybucket.NewLeakyBucket(1, 1, time.Second*10, mtp)
 	defer lb.Close()
 	ch, ok := lb.Allow()
 	assert.True(t, ok)
@@ -31,14 +38,18 @@ func TestLeakyBucketCapOne(t *testing.T) {
 }
 
 func TestCallAfterClose(t *testing.T) {
-	lb := leakybucket.NewLeakyBucket(1, 1, time.Second*10)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	lb := leakybucket.NewLeakyBucket(1, 1, time.Second*10, mtp)
 	lb.Close()
 	_, ok := lb.Allow()
 	assert.False(t, ok)
 }
 
 func TestLeakyBucketParallelProducersAndConsumers(t *testing.T) {
-	lb := leakybucket.NewLeakyBucket(10, 5, time.Second)
+	mtp := mock.GetMockTimeProviderDefault()
+	defer mtp.(*mock_time.MockTimeProvider).Close()
+	lb := leakybucket.NewLeakyBucket(10, 5, time.Second, mtp)
 	defer lb.Close()
-	testhelper.RunWorkersBuffered(t, lb)
+	testhelper.RunWorkersBuffered(t, lb, mtp)
 }

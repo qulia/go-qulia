@@ -5,12 +5,13 @@ import (
 
 	"github.com/qulia/go-qulia/algo/ratelimiter"
 	"github.com/qulia/go-qulia/concurrency/unique"
+	"github.com/qulia/go-qulia/lib/common"
 )
 
 // Allows as long as there are tokens in the bucket.
 // Capacity is the maximum number of tokens that can be stored in the bucket.
 // FillAmount is the number of tokens that are added to the bucket per fill period.
-func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) ratelimiter.RateLimiter {
+func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration, timeP common.TimeProvider) ratelimiter.RateLimiter {
 	if fillAmount > capacity || fillPeriod == 0 {
 		panic("invalid arguments")
 	}
@@ -19,7 +20,8 @@ func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) rate
 		fillAmount: fillAmount,
 		tokens:     fillAmount,
 		fillPeriod: fillPeriod,
-		lastFill:   time.Now(),
+		lastFill:   timeP.Now(),
+		timeP:      timeP,
 	}
 
 	tb.tokensAccessor = unique.NewUnique(&tb.tokens)
@@ -27,12 +29,12 @@ func NewTokenBucket(capacity int, fillAmount int, fillPeriod time.Duration) rate
 }
 
 type tokenBucket struct {
-	capacity   int
-	fillAmount int
-	fillPeriod time.Duration
-	lastFill   time.Time
-	tokens     int
-
+	capacity       int
+	fillAmount     int
+	fillPeriod     time.Duration
+	lastFill       time.Time
+	tokens         int
+	timeP          common.TimeProvider
 	tokensAccessor *unique.Unique[*int]
 }
 
@@ -57,7 +59,7 @@ func (tb *tokenBucket) Allow() bool {
 }
 
 func (tb *tokenBucket) fill() {
-	tn := time.Now()
+	tn := tb.timeP.Now()
 	periods := tn.Sub(tb.lastFill) / tb.fillPeriod
 	refillAmount := int(periods) * int(tb.fillAmount)
 

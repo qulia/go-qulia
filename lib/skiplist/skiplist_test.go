@@ -62,12 +62,12 @@ func TestSkipList100(t *testing.T) {
 }
 
 func TestSkipListRand(t *testing.T) {
-	rand.Seed(time.Now().UnixNano())
+	randomGen := rand.New(rand.NewSource(time.Now().UnixNano()))
 	sl := NewSkipList(math.MinInt32, math.MaxInt32)
 	added := []int{}
 	n := 100
 	for i := n - 1; i >= 0; i-- {
-		val := rand.Int()
+		val := randomGen.Int()
 		sl.Add(val)
 		added = append(added, val)
 	}

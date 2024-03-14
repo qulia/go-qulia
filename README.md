@@ -14,6 +14,9 @@ Go data structures, and helper libraries.
 - [Skiplist](lib/skiplist/)
 - [Stack](lib/stack/)
 - [Tree](lib/tree/)
+  - [BinaryIndexTree](lib/tree/bit.go)
+  - [SegmentTree](lib/tree/segment.go)
+  - [BinarySearchTree](lib/tree/bst.go)
 - [Trie](lib/trie)
 - [UnionFind](lib/unionfind/)
 
@@ -26,6 +29,9 @@ Go data structures, and helper libraries.
   - [SlidingWindowLog](algo/ratelimiter/slidingwindowlog/)
   - [SlidingWindowCounter](algo/ratelimiter/slidingwindowcounter/)
 
+# Clone
+- [Clone](clone/clone.go)
+
 # Middleware
 
 - [RateLimiter](http/server/middleware/ratelimiter)
@@ -33,6 +39,20 @@ Go data structures, and helper libraries.
 # Concurrency
 
 - [Unique](concurrency/unique/)
+
+# Data Processing
+
+- Windowing
+  - [FixedWindow](dataprocessing/window/window.go)
+  - [SlidingWindow](dataprocessing/window/window.go)
+
+# Messaging
+
+- [Pub/Sub Broker](messaging/broker/)
+
+# Mock
+
+- [MockTimeProvider](mock/mock_time/provider.go)
 
 ---
 
