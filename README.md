@@ -26,6 +26,10 @@ Go data structures, and helper libraries.
   - [SlidingWindowLog](algo/ratelimiter/slidingwindowlog/)
   - [SlidingWindowCounter](algo/ratelimiter/slidingwindowcounter/)
 
+# Middleware
+
+- [RateLimiter](http/server/middleware/ratelimiter)
+  
 # Concurrency
 
 - [Unique](concurrency/unique/)
