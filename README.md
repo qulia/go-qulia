@@ -1,7 +1,7 @@
 # go-qulia
 
 ![Coverage](https://img.shields.io/badge/Coverage-97.9%25-brightgreen)
-[![Go Reference](https://pkg.go.dev/badge/github.com/qulia/go-qulia.svg)](https://pkg.go.dev/github.com/qulia/go-qulia)
+[![Go Reference](https://pkg.go.dev/badge/github.com/qulia/go-qulia/v2.svg)](https://pkg.go.dev/github.com/qulia/go-qulia/v2)
 
 Go data structures, and helper libraries.
 
