@@ -4,7 +4,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/set"
+	"github.com/qulia/go-qulia/v2/lib/set"
 	"github.com/stretchr/testify/assert"
 )
 

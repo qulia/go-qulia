@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/qulia/go-qulia/lib/graph"
+	"github.com/qulia/go-qulia/v2/lib/graph"
 )
 
 var dotExe string

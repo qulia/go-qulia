@@ -5,7 +5,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 type PlayEvent struct {

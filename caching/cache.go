@@ -1,6 +1,6 @@
 package caching
 
-import "github.com/qulia/go-qulia/lib/common"
+import "github.com/qulia/go-qulia/v2/lib/common"
 
 // Generic Cache interface
 // values need to be Keyable

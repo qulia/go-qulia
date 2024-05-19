@@ -1,7 +1,7 @@
 package set
 
 import (
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 // Set with elements of any comparable type

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/qulia/go-qulia/lib/graph"
+	"github.com/qulia/go-qulia/v2/lib/graph"
 )
 
 // This is a problem where we need to find the itinerary using the tickets

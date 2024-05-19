@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/concurrency/unique"
-	"github.com/qulia/go-qulia/lib/queue"
+	"github.com/qulia/go-qulia/v2/concurrency/unique"
+	"github.com/qulia/go-qulia/v2/lib/queue"
 )
 
 type job struct {

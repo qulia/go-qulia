@@ -1,6 +1,6 @@
 package trie
 
-import "github.com/qulia/go-qulia/lib/set"
+import "github.com/qulia/go-qulia/v2/lib/set"
 
 type node struct {
 	char      byte

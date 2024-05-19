@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/lib/common"
-	"github.com/qulia/go-qulia/lib/set"
-	"github.com/qulia/go-qulia/mock"
-	"github.com/qulia/go-qulia/mock/mock_time"
+	"github.com/qulia/go-qulia/v2/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/set"
+	"github.com/qulia/go-qulia/v2/mock"
+	"github.com/qulia/go-qulia/v2/mock/mock_time"
 	"github.com/stretchr/testify/assert"
 )
 

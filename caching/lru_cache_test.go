@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/qulia/go-qulia/caching"
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/caching"
+	"github.com/qulia/go-qulia/v2/lib/common"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/qulia/go-qulia/lib/set"
+	"github.com/qulia/go-qulia/v2/lib/set"
 )
 
 type Graph[T comparable] interface {

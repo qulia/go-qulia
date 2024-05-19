@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/lib/heap"
+	"github.com/qulia/go-qulia/v2/lib/heap"
 	"github.com/stretchr/testify/assert"
 
 	contheap "container/heap"
@@ -72,7 +72,7 @@ func (h *JobHeap) Pop() interface{} {
 func BenchmarkHeapBasic(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 	fmt.Printf("Size %d\n", len(genInput))
-	//log.Info("Generated input %s", genInput)
+	// log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
 		h := heap.NewMaxHeap(genInput)
@@ -86,7 +86,7 @@ func BenchmarkHeapPush(b *testing.B) {
 	genInput := generateInput(numsDefaultSize, numsDefaultMin, numsDefaultMax)
 
 	fmt.Printf("Size %d\n", len(genInput))
-	//log.Info("Generated input %s", genInput)
+	// log.Info("Generated input %s", genInput)
 	b.ResetTimer()
 	b.Run("Create heap from slice", func(b *testing.B) {
 		h := heap.NewMaxHeap[int](nil)
@@ -140,7 +140,6 @@ func BenchmarkHeapCompareStdContainerHeap(b *testing.B) {
 		BenchmarkHeapCompareStdContainerHeap/go-qulia/lib/heap-8      	1000000000	         0.002898 ns/op	       0 B/op	       0 allocs/op
 		PASS
 	*/
-
 }
 
 func BenchmarkHeapCompareStdContainerHeapJob(b *testing.B) {

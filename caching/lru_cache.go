@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"sync"
 
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 type lruCache[T common.Keyable[K], K comparable] struct {

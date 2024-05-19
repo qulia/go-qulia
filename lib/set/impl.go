@@ -1,7 +1,7 @@
 package set
 
 import (
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 type setImpl[T comparable] struct {

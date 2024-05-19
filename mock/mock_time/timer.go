@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 type mockTimer struct {

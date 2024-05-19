@@ -3,8 +3,8 @@ package trie_test
 import (
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/set"
-	"github.com/qulia/go-qulia/lib/trie"
+	"github.com/qulia/go-qulia/v2/lib/set"
+	"github.com/qulia/go-qulia/v2/lib/trie"
 	"github.com/stretchr/testify/assert"
 )
 

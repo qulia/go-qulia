@@ -3,9 +3,9 @@ package tokenbucket
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/algo/ratelimiter"
-	"github.com/qulia/go-qulia/concurrency/unique"
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter"
+	"github.com/qulia/go-qulia/v2/concurrency/unique"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 // Allows as long as there are tokens in the bucket.

@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qulia/go-qulia/lib/common"
-	"github.com/qulia/go-qulia/lib/heap"
+	"github.com/qulia/go-qulia/v2/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/heap"
 )
 
 // Maintains a heap of schedules

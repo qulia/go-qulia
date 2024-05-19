@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/algo/ratelimiter"
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 func RunWorkers(t *testing.T, rl ratelimiter.RateLimiter, timeP common.TimeProvider) {

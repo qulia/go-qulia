@@ -3,8 +3,8 @@ package graph_test
 import (
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/graph"
-	"github.com/qulia/go-qulia/lib/set"
+	"github.com/qulia/go-qulia/v2/lib/graph"
+	"github.com/qulia/go-qulia/v2/lib/set"
 	"github.com/stretchr/testify/assert"
 )
 

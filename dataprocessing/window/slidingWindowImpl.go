@@ -3,8 +3,8 @@ package window
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/lib/common"
-	"github.com/qulia/go-qulia/lib/heap"
+	"github.com/qulia/go-qulia/v2/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/heap"
 )
 
 // Sliding window aggregator
@@ -61,7 +61,8 @@ func (swi *slidingWindowImpl[T, R, A]) Results() <-chan PaneOutput[R] {
 }
 
 func newSlidingWindowImpl[T common.Timed, R any, A common.Aggregator[T, R]](
-	size, sliding time.Duration, agg A, mtp common.TimeProvider) *slidingWindowImpl[T, R, A] {
+	size, sliding time.Duration, agg A, mtp common.TimeProvider,
+) *slidingWindowImpl[T, R, A] {
 	swi := slidingWindowImpl[T, R, A]{
 		size:       size,
 		sliding:    sliding,

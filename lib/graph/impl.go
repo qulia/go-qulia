@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/qulia/go-qulia/lib/set"
+import "github.com/qulia/go-qulia/v2/lib/set"
 
 type graphImpl[T comparable] struct {
 	nodes   map[T]map[T]bool

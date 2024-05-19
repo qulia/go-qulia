@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/heap"
+	"github.com/qulia/go-qulia/v2/lib/heap"
 	"github.com/stretchr/testify/assert"
 )
 

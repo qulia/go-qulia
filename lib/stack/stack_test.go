@@ -3,7 +3,7 @@ package stack_test
 import (
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/stack"
+	"github.com/qulia/go-qulia/v2/lib/stack"
 	"github.com/stretchr/testify/assert"
 )
 

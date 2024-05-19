@@ -1,6 +1,6 @@
 package set
 
-import "github.com/qulia/go-qulia/lib/common"
+import "github.com/qulia/go-qulia/v2/lib/common"
 
 type flexImpl[T common.Keyable[K], K comparable] struct {
 	entries map[K]T

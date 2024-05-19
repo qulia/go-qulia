@@ -3,9 +3,9 @@ package fixedwindowcounter
 import (
 	"time"
 
-	"github.com/qulia/go-qulia/algo/ratelimiter"
-	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 // TokenBucket with the provided window is the "divider"

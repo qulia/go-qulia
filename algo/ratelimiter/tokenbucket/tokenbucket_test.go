@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/algo/ratelimiter/testhelper"
-	"github.com/qulia/go-qulia/algo/ratelimiter/tokenbucket"
-	"github.com/qulia/go-qulia/mock"
-	"github.com/qulia/go-qulia/mock/mock_time"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter/testhelper"
+	"github.com/qulia/go-qulia/v2/algo/ratelimiter/tokenbucket"
+	"github.com/qulia/go-qulia/v2/mock"
+	"github.com/qulia/go-qulia/v2/mock/mock_time"
 	"github.com/stretchr/testify/assert"
 )
 

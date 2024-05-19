@@ -1,7 +1,7 @@
 package heap
 
 import (
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 	"golang.org/x/exp/constraints"
 )
 

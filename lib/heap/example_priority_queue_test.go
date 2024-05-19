@@ -4,7 +4,7 @@ package heap_test
 import (
 	"fmt"
 
-	"github.com/qulia/go-qulia/lib/heap"
+	"github.com/qulia/go-qulia/v2/lib/heap"
 )
 
 // This example initializes the max heap with slice of ints

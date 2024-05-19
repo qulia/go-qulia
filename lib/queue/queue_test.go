@@ -3,7 +3,7 @@ package queue_test
 import (
 	"testing"
 
-	"github.com/qulia/go-qulia/lib/queue"
+	"github.com/qulia/go-qulia/v2/lib/queue"
 	"github.com/stretchr/testify/assert"
 )
 

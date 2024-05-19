@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/messaging/broker"
+	"github.com/qulia/go-qulia/v2/messaging/broker"
 	"github.com/stretchr/testify/assert"
 )
 

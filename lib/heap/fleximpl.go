@@ -1,7 +1,7 @@
 package heap
 
 import (
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 // Heap that allows custom comparison for the entries while maintaining heap properties

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/qulia/go-qulia/clone"
+	"github.com/qulia/go-qulia/v2/clone"
 	"github.com/stretchr/testify/assert"
 )
 

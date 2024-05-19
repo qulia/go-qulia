@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qulia/go-qulia/http/server/middleware/ratelimiter"
-	"github.com/qulia/go-qulia/lib/common"
+	"github.com/qulia/go-qulia/v2/http/server/middleware/ratelimiter"
+	"github.com/qulia/go-qulia/v2/lib/common"
 )
 
 const (
