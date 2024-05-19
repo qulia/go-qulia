@@ -50,6 +50,10 @@ Go data structures, and helper libraries.
 
 - [Pub/Sub Broker](messaging/broker/)
 
+# Caching
+
+- [LRU Cache](caching/lru_cache.go)
+
 # Mock
 
 - [MockTimeProvider](mock/mock_time/provider.go)
